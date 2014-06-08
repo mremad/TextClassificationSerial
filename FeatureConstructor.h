@@ -18,8 +18,8 @@ class FeatureConstructor
 		//Number of labels
 		int C;
 
-		void extract_vocab(char*** data_list, int number_documents);
+		void extract_vocab(char*** data_list, int* documents_size, int number_documents);
 
 		//Should handle both cases of labeled/unlabeled
-		void construct_feature_vectors(char*** data_list,int number_documents);
+		void construct_feature_vectors(char*** data_list, int* documents_size, int number_documents);
 }
