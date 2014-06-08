@@ -1,10 +1,7 @@
 class FeatureConstructor
 {
 	public:
-		FeatureConstructor()
-		{
-
-		}
+		FeatureConstructor();
 		//1D array of the unique vocabulary. Size: N
 		char** vocab_list;
 		//2D array of the labeled documents feature vectors. Size:NxD
@@ -22,4 +19,4 @@ class FeatureConstructor
 
 		//Should handle both cases of labeled/unlabeled
 		void construct_feature_vectors(char*** data_list, int* documents_size, int number_documents);
-}
+};

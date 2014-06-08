@@ -15,4 +15,4 @@ class FileReader
 
 		void read_files();
 		
-}
+};

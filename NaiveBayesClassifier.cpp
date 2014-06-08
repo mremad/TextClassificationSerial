@@ -12,5 +12,5 @@ void NaiveBayesClassifier::calculate_second_parameter(int** feature_vectors, int
 
 int NaiveBayesClassifier::classify_unlabeled_document(int * unlabeled_feature_vector)
 {
-
+	return 0;
 }
