@@ -17,6 +17,14 @@ int main(int argc, char* argv[])
 
 	fr.read_files();
 
+	int doc_size;
+	int vocab_size;
+	int** fv;
+
+	ConsolePrint::create_dummy_fv(&doc_size, &vocab_size, &fv);
+
+	//printf("%i ",fv[1][1]);
+
 	getchar();
 	return 0;
 }
