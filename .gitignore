@@ -221,3 +221,5 @@ targetver.h
 stdafx.h
 
 *.xcuserstate
+
+*.pbxproj

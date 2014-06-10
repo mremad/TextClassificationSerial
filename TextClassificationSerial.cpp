@@ -5,6 +5,7 @@
 #include "EM.h"
 #include "FeatureConstructor.h"
 #include "FileReader.h"
+#include "LabelFactory.h"
 
 int main(int argc, char* argv[])
 {
@@ -23,6 +24,8 @@ int main(int argc, char* argv[])
 	FileReader fr = FileReader(10,0);
 
 	FeatureConstructor fc = FeatureConstructor();
+    
+    LabelFactory lf = LabelFactory();
 
 	EM em = EM();
 

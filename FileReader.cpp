@@ -37,7 +37,7 @@ void FileReader::read_files()
 	string line;
 	D=0;
 	data_list_labeled=new string*[labeled];
-  ifstream myfile ("DocumentClassifierData.txt");
+  ifstream myfile ("/Users/Mohamed/Desktop/TextClassificationSerial/DocumentClassifierData.txt");
   if (myfile.is_open())
   {
 	  int i=0;
