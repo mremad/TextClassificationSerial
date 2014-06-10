@@ -219,3 +219,5 @@ TextClassificationSerial.vcxproj.filters
 stdafx.cpp
 targetver.h
 stdafx.h
+
+*.xcuserstate
