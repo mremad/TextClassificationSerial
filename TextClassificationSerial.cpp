@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 		fv[i] = (int*) malloc(sizeof(int)*(vocab_size));
 	}
 
-	//FileReader fr = FileReader(10,0);
+	FileReader fr = FileReader(10,0);
 
 	FeatureConstructor fc = FeatureConstructor();
 
