@@ -12,6 +12,7 @@ class LabelFactory
     void delete_documents_labels(int** feature_vectors, int total_number_documents);
     public:
     LabelFactory();
-    int* labeled_docs_indexes;
+    int** labeled_fv;
+    int** unlabeled_fv;
     void select_labeled_docs(int** feature_vectors, int total_number_documents, int desired_labeled_documents, int number_labels);
 };

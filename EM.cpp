@@ -5,12 +5,12 @@ EM::EM()
 
 }
 
-void EM::run_em(NaiveBayesClassifier* classifier, int** labeled_feature_vectors, int** unlabeled_feature_vectors, int number_unique_words, int number_labeled_documents,int number_unlabeled_documents, int number_labels)
+void EM::run_em(NaiveBayesClassifier* classifier, int** feature_vectors, int number_unique_words,int* index_labeled_docs, int number_labeled_documents, int number_labels)
 {
 	/*Initial Step*/
 	//Construct classifier with labeled feature_vectors
     
-    classifier->NaiveBayesClassifier::calculate_first_parameter(labeled_feature_vectors, number_unique_words, number_labeled_documents, number_labels);
+    classifier->NaiveBayesClassifier::calculate_first_parameter(feature_vectors, number_unique_words, number_labeled_documents, number_labels);
 
 	while(true)
 	{

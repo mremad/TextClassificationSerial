@@ -91,7 +91,7 @@ int NaiveBayesClassifier::classify_unlabeled_document(int * unlabeled_feature_ve
 		long double prob = (long double)NaiveBayesClassifier::prob_document_label(unlabeled_feature_vector,number_unique_words,i)/
 			(long double)prob_document_all_labels(unlabeled_feature_vector,number_unique_words,number_labels);
 
-		printf("Prob: %f \n",prob);
+		printf("Prob: %Lf \n",prob);
 
 		if(prob > max_prob)
 		{

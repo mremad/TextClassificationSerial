@@ -20,10 +20,11 @@ void LabelFactory::delete_documents_labels(int** feature_vectors, int total_numb
 
 void LabelFactory::select_labeled_docs(int** feature_vectors, int total_number_documents, int desired_labeled_documents, int number_labels)
 {
-    labeled_docs_indexes = (int*)malloc(sizeof(int)*desired_labeled_documents);
+    labeled_fv = (int**)malloc(sizeof(int*)*desired_labeled_documents);
+    unlabeled_fv = (int**)malloc(sizeof(int*)*(total_number_documents - desired_labeled_documents));
     
     
-    /* Logic to pick labeled documents*/
+    /* Logic to pick labeled documents and unlabeled documents*/
     
     
     //Delete the labels of other documents
