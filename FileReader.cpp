@@ -58,7 +58,7 @@ void FileReader::read_files()
 	  int i=0;
     while ( getline (myfile,line)&&i<labeled)
     {
-      read_single_file(line,data_list_labeled[i]);
+     // read_single_file(line,data_list_labeled[i]);
 	  D++;i++;
     }
     myfile.close();
