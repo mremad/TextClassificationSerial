@@ -13,6 +13,7 @@ NaiveBayesClassifier::NaiveBayesClassifier(int number_labels,int number_unique_w
 
 void NaiveBayesClassifier::calculate_first_parameter(int** feature_vectors,int number_unique_words, int number_documents, int number_labels)
 {
+    printf("Calculating First parameter: \n");
 	for(int i = 0;i < number_labels;i++)
 	{
 		int all_label_occ = calculate_all_words_label_occurence(feature_vectors,number_unique_words,number_documents,i);
@@ -21,10 +22,12 @@ void NaiveBayesClassifier::calculate_first_parameter(int** feature_vectors,int n
 			first_parameter[i][j] = (float)(calculate_single_word_label_occurence(feature_vectors,j,number_documents,i) + 1) *1 / 
 				(float)(all_label_occ+number_unique_words);
 
-			printf("%f ",first_parameter[i][j]);
+			//printf("%f ",first_parameter[i][j]);
 		}
-		printf("\n");
+		//printf("\n");
 	}
+    
+    //printf("\n");
 }
 
 int NaiveBayesClassifier::calculate_single_word_label_occurence(int ** feature_vectors, int word_index, int number_documents, int label)
@@ -55,17 +58,18 @@ int NaiveBayesClassifier::calculate_all_words_label_occurence(int ** feature_vec
 
 void NaiveBayesClassifier::calculate_second_parameter(int** feature_vectors, int number_documents, int number_labels)
 {
+    printf("Calculating Second Parameter: \n");
 	int denom = number_documents+number_labels;
-
+    
 	for(int i = 0;i<number_labels;i++)
 	{
 		second_parameter[i] = (float)(1+calculate_label_occurance(feature_vectors,number_documents,i))/
 			(float)denom;
-
-		printf("%f ",second_parameter[i]);
+        //printf("%lf \n",second_parameter[i]);
 	}
+    
+    //printf("\n");
 
-	printf("\n");
 }
 
 int NaiveBayesClassifier::calculate_label_occurance(int ** feature_vectors, int number_documents, int label)
@@ -90,8 +94,6 @@ int NaiveBayesClassifier::classify_unlabeled_document(int * unlabeled_feature_ve
 	{
 		long double prob = (long double)NaiveBayesClassifier::prob_document_label(unlabeled_feature_vector,number_unique_words,i)/
 			(long double)prob_document_all_labels(unlabeled_feature_vector,number_unique_words,number_labels);
-
-		printf("Prob: %Lf \n",prob);
 
 		if(prob > max_prob)
 		{
