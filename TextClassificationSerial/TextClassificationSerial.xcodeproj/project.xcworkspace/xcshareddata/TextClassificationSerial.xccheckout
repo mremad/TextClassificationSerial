@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>7C687886-A820-465B-85CE-B5082ABF2C5A</string>
+	<key>IDESourceControlProjectName</key>
+	<string>TextClassificationSerial</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>069E49C0-8BD4-4441-8D3A-25B25135754F</key>
+		<string>https://github.com/mremad/TextClassificationSerial.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>TextClassificationSerial/TextClassificationSerial.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>069E49C0-8BD4-4441-8D3A-25B25135754F</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/mremad/TextClassificationSerial.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>069E49C0-8BD4-4441-8D3A-25B25135754F</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>069E49C0-8BD4-4441-8D3A-25B25135754F</string>
+			<key>IDESourceControlWCCName</key>
+			<string>TextClassificationSerial</string>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -3,13 +3,13 @@
 #include "math.h"
 class NaiveBayesClassifier
 {
-	long double NaiveBayesClassifier::prob_document_label(int * feature_vector, int number_unique_words, int label);
-	long double NaiveBayesClassifier::prob_document_all_labels(int * feature_vector, int number_unique_words, int number_labels);
+	long double prob_document_label(int * feature_vector, int number_unique_words, int label);
+	long double prob_document_all_labels(int * feature_vector, int number_unique_words, int number_labels);
 
-	int NaiveBayesClassifier::calculate_single_word_label_occurence(int ** feature_vectors, int word_index, int number_documents, int label);
-	int NaiveBayesClassifier::calculate_all_words_label_occurence(int ** feature_vectors, int number_unique_words, int number_documents, int label);
+	int calculate_single_word_label_occurence(int ** feature_vectors, int word_index, int number_documents, int label);
+	int calculate_all_words_label_occurence(int ** feature_vectors, int number_unique_words, int number_documents, int label);
 
-	int NaiveBayesClassifier::calculate_label_occurance(int ** feature_vectors, int number_documents, int label);
+	int calculate_label_occurance(int ** feature_vectors, int number_documents, int label);
 
 	public:
 		NaiveBayesClassifier(int number_labels,int number_unique_words);
