@@ -5,6 +5,11 @@ static void print_string_array(char** arr)
 	
 }
 
+void ConsolePrint::print(char* arr)
+{
+	printf(arr);
+}
+
 void ConsolePrint::create_dummy_fv(int* vocab_size, int* document_size, int ** fv)
 {
 

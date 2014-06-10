@@ -5,7 +5,6 @@
 #include "EM.h"
 #include "FeatureConstructor.h"
 #include "FileReader.h"
-#include "ConsolePrint.h"
 
 int main(int argc, char* argv[])
 {
@@ -21,7 +20,7 @@ int main(int argc, char* argv[])
 		fv[i] = (int*) malloc(sizeof(int)*(vocab_size));
 	}
 
-	FileReader fr = FileReader();
+	//FileReader fr = FileReader(10,0);
 
 	FeatureConstructor fc = FeatureConstructor();
 
@@ -29,7 +28,7 @@ int main(int argc, char* argv[])
 
 	NaiveBayesClassifier nc = NaiveBayesClassifier(number_classes,vocab_size);
 
-	fr.read_files();
+	//fr.read_files();
 
 
 
