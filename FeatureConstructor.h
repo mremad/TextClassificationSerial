@@ -1,22 +1,32 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+
+
 class FeatureConstructor
 {
 	public:
-		FeatureConstructor();
+    FeatureConstructor();
+    FeatureConstructor(int* document_size, int number_documents);
 		//1D array of the unique vocabulary. Size: N
-		char** vocab_list;
-		//2D array of the labeled documents feature vectors. Size:NxD
-		int ** labeled_feature_vectors;
-		//2D array of the unlabeled documents feature vectors. Size:NxD
-		int ** unlabeled_feature_vectors;
+		string* vocab_list;
+		//2D array of the labeled documents feature vectors. Size:DxN
+		int ** feature_vector;
+    
+        // 1D array of labels
+        string* label_list;
 		//Number of all unique words
-		int N;
+		int NUM_OF_UNIQUE_WORDS;
 		//Number of all documents
-		int D;
+		int NUM_OF_DOCUMENTS;
 		//Number of labels
-		int C;
-
-		void extract_vocab(char*** data_list, int* documents_size, int number_documents);
+		int NUM_OF_LABELS;
+    
+		void extract_vocab(string** data_list, int* documents_size, int number_documents);
 
 		//Should handle both cases of labeled/unlabeled
-		void construct_feature_vectors(char*** data_list, int* documents_size, int number_documents);
+		void construct_feature_vectors(string** data_list, int* documents_size, int number_documents);
 };
