@@ -17,7 +17,7 @@ void FileReader::read_single_file(string line, string* document_words)
 	document_words[index_in_doc]="";//initialize the string to append the word to it
 	for(int k=0;k<line.size();k++)
 	{
-		if(line[k]==' '|| line[k]==9)//word ended initialize new string and increase indexInDoc
+		if((line[k]==' '|| line[k]==9) && k<line.size()-1)//word ended initialize new string and increase indexInDoc
 		{
 			index_in_doc++;
 			document_words[index_in_doc]="";
@@ -55,6 +55,7 @@ void FileReader::read_files()
 				word_count++;
 			}
 			data_list[i]=new string[word_count];//allocate array for each document(line)
+			
 			read_single_file(line,data_list[i]);
 			documents_size[processed_docs]=word_count;
 			processed_docs++;
