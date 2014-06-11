@@ -10,7 +10,7 @@
 int main(int argc, char* argv[])
 {
 
-	int document_size = 20;
+	int document_size = 500;
 	int vocab_size = 5;
 	int number_classes = 20;
 	int** fv;
@@ -29,29 +29,34 @@ int main(int argc, char* argv[])
 	}
 
 
-	/*FeatureConstructor fc = FeatureConstructor();
+	
 
-	FileReader fr = FileReader(2,"/Users/moumenmohamed/Documents/Xcode/text2/text2/DocumentClassifierData.txt");
+	FileReader fr = FileReader(document_size,"/Users/Mohamed/Desktop/TextClassificationSerial/DocumentClassifierData.txt");
 
-	FeatureConstructor fc = FeatureConstructor(fr.documents_size,2);
-    fc.extract_vocab(fr.data_list, fr.documents_size, 2);
-    fc.construct_feature_vectors(fr.data_list, fr.documents_size, 2);
+    
+	FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
+    fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
+    fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
     
     for(int i=0;i<fc.NUM_OF_UNIQUE_WORDS;i++)
     {
-        //printf("%s",fc.vocab_list[i].c_str());
+        printf("%s ",fc.vocab_list[i].c_str());
     }
-    //printf("\n");
-    //ConsolePrint::print_2d_int2(fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS, fc.feature_vector);
+    printf("\n");
+    //ConsolePrint::print_2d_int(fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS, fc.feature_vector);
     
+    NaiveBayesClassifier nc = NaiveBayesClassifier(fc.NUM_OF_LABELS,fc.NUM_OF_UNIQUE_WORDS);
+    nc.calculate_first_parameter(fc.feature_vector, fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS, fc.NUM_OF_LABELS);
+    nc.calculate_second_parameter(fc.feature_vector, fc.NUM_OF_DOCUMENTS, fc.NUM_OF_LABELS);
     
->>>>>>> origin/master
+    ConsolePrint::print_2d_float(10, fc.NUM_OF_LABELS, nc.first_parameter);
     
+ /*
     LabelFactory lf = LabelFactory();
 
 	EM em = EM();
 
-	NaiveBayesClassifier nc = NaiveBayesClassifier(number_classes,vocab_size);
+	
 
 	//fr.read_files();
 
@@ -79,26 +84,7 @@ int main(int argc, char* argv[])
 
 	*///printf("Label: %d \n",label);
 	//int tempFV[5][3]={{1,3,4},{2,7,3},{1,7,1},{2,8,2},{2,9,0}};
-	/*int **FV;
-	int desired_labeled=3;
-	int total=5;
-	//int labelList;
-	FV = (int**)malloc(sizeof(int*)*5);
-	for(int i=0;i<5;i++)
-		FV[i] =(int*)malloc(sizeof(int)*3); 
-	FV[0][0]=1;
-	FV[0][1]=3;FV[3][1]=8;
-	FV[0][2]=4;FV[3][2]=2;
-	FV[1][0]=2;FV[4][0]=2;
-	FV[1][1]=7;FV[4][1]=9;
-	FV[1][2]=3;FV[4][2]=0;
-	FV[2][0]=1;
-	FV[2][1]=7;
-	FV[2][2]=1;
-	FV[3][0]=2;
-	LabelFactory lf= LabelFactory(FV,total,desired_labeled,2);
-
-    */
+    
     printf("Program terminated safely\n");
 	getchar();
 	return 0;

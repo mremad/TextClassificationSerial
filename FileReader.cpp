@@ -62,6 +62,7 @@ void FileReader::read_files()
 			i++;
 		}
 		myfile.close();
+        printf("%d Documents read successfully\n",num_docs);
 	}
 
   else cout << "Unable to open file\n";

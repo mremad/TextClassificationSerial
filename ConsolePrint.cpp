@@ -23,14 +23,14 @@ void ConsolePrint::create_dummy_fv(int* vocab_size, int* document_size, int ** f
 	}
 }
 
-void ConsolePrint::print_2d_int(int* vocab_size, int* document_size, int ** fv)
+void ConsolePrint::print_2d_float(int num_columns, int num_rows, float ** fv)
 {
-    printf("Printing Array: \n");
-	for(int i = 0;i<*document_size;i++)
+    printf("Printing Long Double Array: \n");
+	for(int i = 0;i<num_rows;i++)
 	{
-		for(int j = 0;j<*vocab_size;j++)
+		for(int j = 0;j<num_columns;j++)
 		{
-			printf("%i ",fv[i][j]);
+			printf("%f\t",fv[i][j]);
 		}
 		printf("\n");
 	}
@@ -38,7 +38,8 @@ void ConsolePrint::print_2d_int(int* vocab_size, int* document_size, int ** fv)
     printf("\n");
 }
 
-void ConsolePrint::print_2d_int2(int vocab_size, int document_size, int ** fv)
+
+void ConsolePrint::print_2d_int(int vocab_size, int document_size, int ** fv)
 {
     printf("Printing Array: \n");
 	for(int i = 0;i<document_size;i++)
