@@ -37,3 +37,18 @@ void ConsolePrint::print_2d_int(int* vocab_size, int* document_size, int ** fv)
     
     printf("\n");
 }
+
+void ConsolePrint::print_2d_int2(int vocab_size, int document_size, int ** fv)
+{
+    printf("Printing Array: \n");
+	for(int i = 0;i<document_size;i++)
+	{
+		for(int j = 0;j<vocab_size;j++)
+		{
+			printf("%i ",fv[i][j]);
+		}
+		printf("\n");
+	}
+    
+    printf("\n");
+}

@@ -28,9 +28,20 @@ int main(int argc, char* argv[])
 		fv[i] = (int*) malloc(sizeof(int)*(vocab_size));
 	}
 
-	FileReader fr = FileReader(10,"DocumentClassifierData.txt");
+	FileReader fr = FileReader(2,"/Users/moumenmohamed/Documents/Xcode/text2/text2/DocumentClassifierData.txt");
 
-	FeatureConstructor fc = FeatureConstructor();
+	FeatureConstructor fc = FeatureConstructor(fr.documents_size,2);
+    fc.extract_vocab(fr.data_list, fr.documents_size, 2);
+    fc.construct_feature_vectors(fr.data_list, fr.documents_size, 2);
+    
+    for(int i=0;i<fc.NUM_OF_UNIQUE_WORDS;i++)
+    {
+        //printf("%s",fc.vocab_list[i].c_str());
+    }
+    //printf("\n");
+    //ConsolePrint::print_2d_int2(fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS, fc.feature_vector);
+    
+    
     
     LabelFactory lf = LabelFactory();
 
