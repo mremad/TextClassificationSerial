@@ -28,9 +28,9 @@ int main(int argc, char* argv[])
 		fv[i] = (int*) malloc(sizeof(int)*(vocab_size));
 	}
 
-	FileReader fr = FileReader(10,"DocumentClassifierData.txt");
+	FileReader fr = FileReader(10000,"DocumentClassifierData.txt");
 
-	FeatureConstructor fc = FeatureConstructor();
+	/*FeatureConstructor fc = FeatureConstructor();
     
     LabelFactory lf = LabelFactory();
 
@@ -62,8 +62,28 @@ int main(int argc, char* argv[])
 
 	//int label = nc.classify_unlabeled_document(fv[9],vocab_size,number_classes);
 
-	//printf("Label: %d \n",label);
-    
+	*///printf("Label: %d \n",label);
+	//int tempFV[5][3]={{1,3,4},{2,7,3},{1,7,1},{2,8,2},{2,9,0}};
+	/*int **FV;
+	int desired_labeled=3;
+	int total=5;
+	//int labelList;
+	FV = (int**)malloc(sizeof(int*)*5);
+	for(int i=0;i<5;i++)
+		FV[i] =(int*)malloc(sizeof(int)*3); 
+	FV[0][0]=1;
+	FV[0][1]=3;FV[3][1]=8;
+	FV[0][2]=4;FV[3][2]=2;
+	FV[1][0]=2;FV[4][0]=2;
+	FV[1][1]=7;FV[4][1]=9;
+	FV[1][2]=3;FV[4][2]=0;
+	FV[2][0]=1;
+	FV[2][1]=7;
+	FV[2][2]=1;
+	FV[3][0]=2;
+	LabelFactory lf= LabelFactory(FV,total,desired_labeled,2);
+
+    */
     printf("Program terminated safely\n");
 	getchar();
 	return 0;
