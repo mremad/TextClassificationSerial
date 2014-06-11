@@ -1,4 +1,4 @@
-#include "FeatureConstructor.h"
+ #include "FeatureConstructor.h"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -94,7 +94,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
 void FeatureConstructor::construct_feature_vectors(string** data_list,int* documents_size, int number_documents)
 {
     // set the number of rows to be equal number of documents
-    *feature_vector= new int [NUM_OF_DOCUMENTS];
+    feature_vector= new int* [NUM_OF_DOCUMENTS];
     
     // loop on every row and set number of columns to be equal of number of unique words
     for(int i=0;i<NUM_OF_DOCUMENTS;i++)
