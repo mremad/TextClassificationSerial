@@ -5,17 +5,14 @@
 using namespace std;
 class FileReader
 {
-	int labeled;
-	int unlabeled;
-	int processedDocs;
+	int num_docs;
+	int processed_docs;
+	string path;
 	void read_single_file(string line, string* document_words);
 	public:
-		FileReader(int labeled,int unlabeled);
+		FileReader(int docs_to_read,string path);
 		//2D array of all the words in all the documents. Size: MxD
-		string** data_list_labeled;
-		char*** data_list_unlabeled;
-		//Number of documents to read
-		int D;
+		string** data_list;
 		
 		//1D array of the size of each document
 		int* documents_size;
