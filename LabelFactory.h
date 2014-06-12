@@ -19,6 +19,7 @@ class LabelFactory
 	int desired_labeled_documents;
 	int total_number_documents;
 	int** feature_vectors;
+	int* processed_vectors;
     public:
     LabelFactory(int** feature_vectors,int total_number_documents,int desired_labeled_documents,int num_labels);
     int** labeled_fv;
