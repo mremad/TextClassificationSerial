@@ -8,6 +8,7 @@ using namespace std;
 
 class FeatureConstructor
 {
+    bool check_if_feature(string word);
 	public:
     FeatureConstructor();
     FeatureConstructor(int* document_size, int number_documents);

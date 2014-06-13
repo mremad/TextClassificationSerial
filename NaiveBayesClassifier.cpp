@@ -19,7 +19,7 @@ void NaiveBayesClassifier::calculate_first_parameter(int** feature_vectors,int n
 		int all_label_occ = calculate_all_words_label_occurence(feature_vectors,number_unique_words,number_documents,i);
 		for(int j = 1; j < number_unique_words;j++)
 		{
-			first_parameter[i][j] = (float)(calculate_single_word_label_occurence(feature_vectors,j,number_documents,i) + 1) *1 / 
+			first_parameter[i][j-1] = (float)(calculate_single_word_label_occurence(feature_vectors,j,number_documents,i) + 1) *1 /
 				(float)(all_label_occ+number_unique_words);
 
 			//printf("%f ",first_parameter[i][j]);

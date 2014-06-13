@@ -26,13 +26,28 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
     label_list= new string[number_documents];
 }
 
+bool FeatureConstructor::check_if_feature(string word)
+{
+    bool check = true;
+    
+    if(word.length() <= 3)
+    {
+        check = false;
+    }
+    else if(word == "though" || word == "they" || word == "that" || word == "this" || word == "there" || word == "were"
+            || word == "than" || word == "rather" || word == "from" || word == "most")
+        check = false;
+    
+    return check;
+}
+
 //Builds a list of all unique words in vocab_list from data_list
 void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents)
 {
   
     
     // loop over all documents and extract all labels
-    
+    printf("Began Vocab Extraction\n");
     for(int i=0;i<number_documents;i++)
     {
         
@@ -59,14 +74,30 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             NUM_OF_LABELS++;
         }
     }
-    
+    printf("Labels found: %d\n",NUM_OF_LABELS);
     
     // loop over documents
     for(int i=0;i<number_documents; i++)
     {
+        if( ((float)i/number_documents) == ((float)80/100) )
+            printf("80%% Completed: %d Unique words found: %d\n",i,NUM_OF_UNIQUE_WORDS);
+        else if(((float)i/number_documents) == ((float)60/100))
+            printf("60%% Completed: %d Unique words found: %d\n",i,NUM_OF_UNIQUE_WORDS);
+        else if(((float)i/number_documents) == ((float)40/100))
+            printf("40%% Completed: %d Unique words found: %d\n",i,NUM_OF_UNIQUE_WORDS);
+        else if(((float)i/number_documents) == ((float)20/100))
+            printf("20%% Completed: %d Unique words found: %d\n",i,NUM_OF_UNIQUE_WORDS);
+        else if(((float)i/number_documents) == ((float)10/100))
+            printf("10%% Completed: %d Unique words found: %d\n",i,NUM_OF_UNIQUE_WORDS);
+        else if(i == number_documents - 1)
+            printf("100%% Completed: %d Unique words found: %d\n",i,NUM_OF_UNIQUE_WORDS);
+            
         // loop over all words in this document
         for(int j=1;j<documents_size[i];j++)
         {
+            if(!check_if_feature(data_list[i][j]))
+                continue;
+            
             // search if the word is already in the vocab list
             bool found=false;
             for(int k=0;k<NUM_OF_UNIQUE_WORDS;k++)
@@ -86,6 +117,8 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
            
         }
     }
+    
+    printf("Ended Vocab Extraction\n");
 }
 
 
@@ -93,6 +126,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
 //Builds feature vectors for all documents in document_feature_vectors from data_list
 void FeatureConstructor::construct_feature_vectors(string** data_list,int* documents_size, int number_documents)
 {
+    printf("Began Feature Construction\n");
     // set the number of rows to be equal number of documents
     feature_vector= new int* [NUM_OF_DOCUMENTS];
     
@@ -120,6 +154,6 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
         }
     }
     
-    
+    printf("Ended Feature Construction\n");
     
 }

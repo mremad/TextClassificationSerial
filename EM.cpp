@@ -30,10 +30,9 @@ void EM::run_em(NaiveBayesClassifier* classifier, int** feature_vectors, int** l
         printf("Performing E Step\n");
         classify_all_unlabeled_documents(classifier, unlabeled_docs, number_unique_words, number_unlabeled_documents, number_labels);
         
-        int total = number_labeled_documents+number_unlabeled_documents;
-        ConsolePrint::print_2d_int(&number_unique_words, &number_unlabeled_documents, unlabeled_docs);
-        ConsolePrint::print_2d_int(&number_unique_words, &number_labeled_documents, labeled_docs);
-        ConsolePrint::print_2d_int(&number_unique_words, &total, feature_vectors);
+        ConsolePrint::print_2d_int(number_unique_words, number_unlabeled_documents, unlabeled_docs);
+        ConsolePrint::print_2d_int(number_unique_words, number_labeled_documents, labeled_docs);
+        ConsolePrint::print_2d_int(number_unique_words, number_labeled_documents+number_unlabeled_documents, feature_vectors);
 		/*M Step*/
         
         printf("Performing M Step\n");
