@@ -31,7 +31,6 @@ LabelFactory::LabelFactory(int** feature_vectors,int total_number_documents,int 
 	{
 		printf("\nTotal FV={%i,%i,%i}",feature_vectors[i][0],feature_vectors[i][1],feature_vectors[i][2]);
 	}
-	delete_documents_labels();
 	for(int i=0;i<desired_labeled_documents;i++)
 	{
 		printf("\nLabeled FV={%i,%i,%i}",labeled_fv[i][0],labeled_fv[i][1],labeled_fv[i][2]);
