@@ -11,14 +11,17 @@ class NaiveBayesClassifier
 
 	int calculate_label_occurance(int ** feature_vectors, int number_documents, int label);
 
+    //First Bayes parameter, the prob. of each word per label. Size NxC
+    long double ** first_parameter;
+    //Second Bayes parameter, the prob. of each label. Size C
+    long double * second_parameter;
+    
 	public:
 		NaiveBayesClassifier(int number_labels,int number_unique_words);
-		//First Bayes parameter, the prob. of each word per label. Size NxC
-		float ** first_parameter;
-		//Second Bayes parameter, the prob. of each label. Size C
-		float * second_parameter;
 
-		void calculate_first_parameter(int** feature_vectors,int number_unique_words, int number_documents, int number_labels);
-		void calculate_second_parameter(int** feature_vectors, int number_documents, int number_labels);
+        long double ** get_likelihood();
+        long double *  get_prior();
+		void calculate_likelihood(int** feature_vectors,int number_unique_words, int number_documents, int number_labels);
+		void calculate_prior(int** feature_vectors, int number_documents, int number_labels);
 		int classify_unlabeled_document(int * unlabeled_feature_vector, int number_unique_words, int number_labels);
 };

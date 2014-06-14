@@ -7,98 +7,32 @@
 #include "FileReader.h"
 #include "LabelFactory.h"
 
+#define DATA_PATH_EMAD "/Users/Mohamed/Desktop/TextClassificationSerial/DocumentClassifierData.txt"
+#define DATA_PATH_MOUMEN
+#define DATA_PATH_SHAABAN
+
 int main(int argc, char* argv[])
 {
-
-	int document_size = 20;
-	int vocab_size = 5;
-	int number_classes = 20;
-	int** fv;
-    int** l_fv;
-    int** u_fv;
-    int l_docs = 10;
-    int u_docs = 10;
-
-	fv = (int**) malloc(sizeof(int*)*(document_size));
-    l_fv = (int**) malloc(sizeof(int*)*(l_docs));
-    u_fv = (int**) malloc(sizeof(int*)*(u_docs));
     
-	for(int i = 0;i<document_size;i++)
-	{
-		fv[i] = (int*) malloc(sizeof(int)*(vocab_size));
-	}
+	int document_size = 500;
 
-
-	/*FeatureConstructor fc = FeatureConstructor();
-
-	FileReader fr = FileReader(2,"/Users/moumenmohamed/Documents/Xcode/text2/text2/DocumentClassifierData.txt");
-
-	FeatureConstructor fc = FeatureConstructor(fr.documents_size,2);
-    fc.extract_vocab(fr.data_list, fr.documents_size, 2);
-    fc.construct_feature_vectors(fr.data_list, fr.documents_size, 2);
+	FileReader fr = FileReader(document_size,DATA_PATH_EMAD);
     
-    for(int i=0;i<fc.NUM_OF_UNIQUE_WORDS;i++)
-    {
-        //printf("%s",fc.vocab_list[i].c_str());
-    }
-    //printf("\n");
-    //ConsolePrint::print_2d_int2(fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS, fc.feature_vector);
+	FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
+    fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
+    fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
+    
+	NaiveBayesClassifier nc = NaiveBayesClassifier(fc.NUM_OF_LABELS,fc.NUM_OF_UNIQUE_WORDS);
+    nc.calculate_likelihood(fc.feature_vector,fc.NUM_OF_UNIQUE_WORDS,document_size,fc.NUM_OF_LABELS);
+	nc.calculate_prior(fc.feature_vector,document_size,fc.NUM_OF_LABELS);
     
     
->>>>>>> origin/master
+	int label = nc.classify_unlabeled_document(fc.feature_vector[9],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);
+    printf("Number of labels: %d Chosen Label: %d\n",fc.NUM_OF_LABELS,label);
     
-    LabelFactory lf = LabelFactory();
-
-	EM em = EM();
-
-	NaiveBayesClassifier nc = NaiveBayesClassifier(number_classes,vocab_size);
-
-	//fr.read_files();
-
-
-
-	ConsolePrint::create_dummy_fv(&vocab_size, &document_size, fv);
+    label = nc.classify_unlabeled_document(fc.feature_vector[499],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);
+    printf("Number of labels: %d Chosen Label: %d\n",fc.NUM_OF_LABELS,label);
     
-    for(int i = 0;i<l_docs;i++)
-    {
-        l_fv[i] = fv[i*2];
-        u_fv[i] = fv[(i*2)+1];
-    }
-    
-    
-    ConsolePrint::print_2d_int(&vocab_size, &document_size, fv);
-    ConsolePrint::print_2d_int(&vocab_size, &l_docs, l_fv);
-    ConsolePrint::print_2d_int(&vocab_size, &u_docs, u_fv);
-    
-
-    em.run_em(&nc, fv, l_fv, u_fv, vocab_size, u_docs, l_docs, number_classes);
-	//nc.calculate_first_parameter(fv,vocab_size,document_size,number_classes);
-	//nc.calculate_second_parameter(fv,document_size,number_classes);
-
-	//int label = nc.classify_unlabeled_document(fv[9],vocab_size,number_classes);
-
-	*///printf("Label: %d \n",label);
-	//int tempFV[5][3]={{1,3,4},{2,7,3},{1,7,1},{2,8,2},{2,9,0}};
-	int **FV;
-	int desired_labeled=3;
-	int total=5;
-	//int labelList;
-	FV = (int**)malloc(sizeof(int*)*5);
-	for(int i=0;i<5;i++)
-		FV[i] =(int*)malloc(sizeof(int)*3); 
-	FV[0][0]=1;
-	FV[0][1]=3;FV[3][1]=8;
-	FV[0][2]=4;FV[3][2]=2;
-	FV[1][0]=1;FV[4][0]=1;
-	FV[1][1]=7;FV[4][1]=9;
-	FV[1][2]=3;FV[4][2]=0;
-	FV[2][0]=1;
-	FV[2][1]=7;
-	FV[2][2]=1;
-	FV[3][0]=1;
-	LabelFactory lf= LabelFactory();
-	lf.select_labeled_docs(FV,total,desired_labeled,2);
-
     
     printf("Program terminated safely\n");
 	getchar();

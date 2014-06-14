@@ -59,7 +59,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             {
                 // if found, set the flag to true and replace the lablel with its index in the labellist
                 found= true;
-                data_list[i][0]=l;
+                data_list[i][0]=to_string(l);
             }
         }
         
@@ -69,7 +69,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             // add it to the list
             label_list[NUM_OF_LABELS]= data_list[i][0];
             // replace the label with its index in
-            data_list[i][0]= NUM_OF_LABELS;
+            data_list[i][0]= to_string(NUM_OF_LABELS);
             // increment the number of labels
             NUM_OF_LABELS++;
         }
@@ -133,7 +133,7 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
     // loop on every row and set number of columns to be equal of number of unique words
     for(int i=0;i<NUM_OF_DOCUMENTS;i++)
     {
-        feature_vector[i]= new int [NUM_OF_UNIQUE_WORDS];
+        feature_vector[i]= new int [NUM_OF_UNIQUE_WORDS+1];
     }
     
     // loop over every document
@@ -150,8 +150,10 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
                     count ++;
             }
             // update the value in the feature vector;
-            feature_vector[i][j]=count;
+            feature_vector[i][j+1]=count;
         }
+        
+        feature_vector[i][0] = stoi(data_list[i][0]);
     }
     
     printf("Ended Feature Construction\n");
