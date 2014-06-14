@@ -96,7 +96,8 @@ int main(int argc, char* argv[])
 	FV[2][1]=7;
 	FV[2][2]=1;
 	FV[3][0]=1;
-	LabelFactory lf= LabelFactory(FV,total,desired_labeled,2);
+	LabelFactory lf= LabelFactory();
+	lf.select_labeled_docs(FV,total,desired_labeled,2);
 
     
     printf("Program terminated safely\n");

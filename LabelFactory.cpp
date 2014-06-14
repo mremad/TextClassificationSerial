@@ -8,7 +8,7 @@
 
 #include "LabelFactory.h"
 
-LabelFactory::LabelFactory(int** feature_vectors,int total_number_documents,int desired_labeled_documents,int num_labels)
+LabelFactory::LabelFactory()
 {
 	labeled_fv = (int**)malloc(sizeof(int*)*desired_labeled_documents);
     unlabeled_fv = (int**)malloc(sizeof(int*)*(total_number_documents - desired_labeled_documents));
@@ -41,8 +41,42 @@ LabelFactory::LabelFactory(int** feature_vectors,int total_number_documents,int 
 	}
 }
 
-void LabelFactory::delete_documents_labels()
+void LabelFactory::initialize(int** feature_vectors,int total_number_documents,int desired_labeled_documents,int num_labels)
 {
+	labeled_fv = (int**)malloc(sizeof(int*)*desired_labeled_documents);
+    unlabeled_fv = (int**)malloc(sizeof(int*)*(total_number_documents - desired_labeled_documents));
+	processed_vectors=(int*)malloc(sizeof(int)*total_number_documents);
+	label_frequency=(int*)malloc(sizeof(int)*desired_labeled_documents);
+	label_index_in_FV=(int*)malloc(sizeof(int)*desired_labeled_documents);
+	for(int i=0;i<desired_labeled_documents;i++)
+	{
+		label_frequency[i]=0;
+	}
+	for(int i=0;i<total_number_documents;i++)
+	{
+		processed_vectors[i]=0;
+	}
+	this->feature_vectors=feature_vectors;
+	this->total_number_documents=total_number_documents;
+	this->desired_labeled_documents=desired_labeled_documents;
+	this->num_labels=num_labels; 
+	/*for(int i=0;i<total_number_documents;i++)
+	{
+		printf("\nTotal FV={%i,%i,%i}",feature_vectors[i][0],feature_vectors[i][1],feature_vectors[i][2]);
+	}
+	for(int i=0;i<desired_labeled_documents;i++)
+	{
+		printf("\nLabeled FV={%i,%i,%i}",labeled_fv[i][0],labeled_fv[i][1],labeled_fv[i][2]);
+	}
+	for(int i=0;i<total_number_documents-desired_labeled_documents;i++)
+	{
+		printf("\nunLabeled FV={%i,%i,%i}",unlabeled_fv[i][0],unlabeled_fv[i][1],unlabeled_fv[i][2]);
+	}*/
+}
+
+void LabelFactory::select_labeled_docs(int** feature_vectors,int total_number_documents,int desired_labeled_documents,int num_labels)
+{
+	initialize(feature_vectors,total_number_documents,desired_labeled_documents,num_labels);
     create_labeled_fv();
 	check_labeled_count();
 	create_unlabeled_fv();
@@ -76,10 +110,10 @@ void LabelFactory::create_labeled_fv()
 		label_index_in_FV[i]=index_in_fv;
 		label_frequency[labeled_fv[i][0]]++;
 	}
-	for(int i=0;i<desired_labeled_documents;i++)
+	/*for(int i=0;i<desired_labeled_documents;i++)
 	{
 		printf("\nBefore count check Labeled FV={%i,%i,%i}",labeled_fv[i][0],labeled_fv[i][1],labeled_fv[i][2]);
-	}
+	}*/
 }
 
 void LabelFactory::check_labeled_count()
