@@ -9,7 +9,7 @@
 
 #define DATA_PATH_EMAD "/Users/Mohamed/Desktop/TextClassificationSerial/DocumentClassifierData.txt"
 #define DATA_PATH_MOUMEN
-#define DATA_PATH_SHAABAN
+#define DATA_PATH_SHAABAN "DocumentClassifierData.txt"
 
 int main(int argc, char* argv[])
 {

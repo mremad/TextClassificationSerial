@@ -1,8 +1,22 @@
+#include "FileReader.h"
+#include "FeatureConstructor.h"
+#include "EM.h"
 class TestResults
 {
-	read(string document_path,int number_documents);
-
-	TestResults();
-	StartTest(string document_path,int number_documents);
-
+	FeatureConstructor feature_constructor;
+	NaiveBayesClassifier classifier;
+	int* documents_size;
+	int** feature_vector;
+	int* result;
+	int accuracy;
+	string document_path;
+	string** data_list;
+	int number_documents;
+	void read_documents();
+	void extract_feature_vector();
+	void classify_documents();
+	void check_accuracy();
+public:
+	TestResults(string document_path,int number_documents,FeatureConstructor feature_constructor,NaiveBayesClassifier classifier);
+	void start_test();
 }
