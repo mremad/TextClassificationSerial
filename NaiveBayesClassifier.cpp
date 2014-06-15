@@ -113,7 +113,7 @@ int NaiveBayesClassifier::classify_unlabeled_document(int * unlabeled_feature_ve
 		}
 	}
 
-	unlabeled_feature_vector[0] = label;
+	//unlabeled_feature_vector[0] = label;
 	return label;
 }
 

@@ -1,3 +1,6 @@
+#ifndef _FEATURECONSTRUCTOR
+#define _FEATURECONSTRUCTOR
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -9,6 +12,12 @@ using namespace std;
 class FeatureConstructor
 {
     bool check_if_feature(string word);
+    
+    int * documents_labels;
+    
+    int get_index_for_label(string label);
+    void convert_labels_integers(string ** data_list, int number_documents);
+    
 	public:
     FeatureConstructor();
     FeatureConstructor(int* document_size, int number_documents);
@@ -31,3 +40,5 @@ class FeatureConstructor
 		//Should handle both cases of labeled/unlabeled
 		void construct_feature_vectors(string** data_list, int* documents_size, int number_documents);
 };
+
+#endif

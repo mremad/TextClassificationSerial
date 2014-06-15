@@ -1,3 +1,6 @@
+#ifndef _NAIVEBAYESCLASSIFIER
+#define _NAIVEBAYESCLASSIFIER
+
 #include <stdlib.h>
 #include "stdio.h"
 #include "math.h"
@@ -25,3 +28,5 @@ class NaiveBayesClassifier
 		void calculate_prior(int** feature_vectors, int number_documents, int number_labels);
 		int classify_unlabeled_document(int * unlabeled_feature_vector, int number_unique_words, int number_labels);
 };
+
+#endif

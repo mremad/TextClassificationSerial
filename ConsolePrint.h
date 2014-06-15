@@ -1,5 +1,7 @@
 #include <stdlib.h> 
 #include <stdio.h>
+#include <iostream>
+#include <string.h>
 #ifndef _CONSOLEPRINT
 #define _CONSOLEPRINT
 class ConsolePrint
@@ -11,6 +13,6 @@ class ConsolePrint
         static void print_1d_float(int num_columns, long double * fv);
         static void print_1d_int(int vocab_size, int * fv);
     
-		static void print(char* arr);
+        static void print_string(std::string arr);
 };
 #endif

@@ -1,3 +1,5 @@
+#ifndef _EM
+#define _EM
 #include "NaiveBayesClassifier.h"
 #include "ConsolePrint.h"
 
@@ -11,3 +13,5 @@ class EM
 		void run_em(NaiveBayesClassifier* classifier, int** feature_vectors, int** labeled_docs, int** unlabeled_docs, int number_unique_words,int number_unlabeled_documents, int number_labeled_documents, int number_labels);
     
 };
+
+#endif

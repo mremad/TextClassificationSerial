@@ -15,7 +15,8 @@ void TestResults::start_test()
 	read_documents();
 	extract_feature_vector();
 	classify_documents();
-	printf("accuracy=%i",accuracy);
+    check_accuracy();
+	printf("Accuracy = %f%%\n",accuracy);
 }
 
 void TestResults::read_documents()
@@ -49,5 +50,5 @@ void TestResults::check_accuracy()
 			accuracy++;
 		}
 	}
-	accuracy=(accuracy/number_documents)*100;
+	accuracy=(accuracy/(float)number_documents)*100;
 }

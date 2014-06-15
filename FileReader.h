@@ -1,7 +1,11 @@
+#ifndef _FILEREADER
+#define _FILEREADER
+
 #include "ConsolePrint.h"
 #include <iostream>
 #include <fstream>
 #include <string>
+
 using namespace std;
 class FileReader
 {
@@ -20,3 +24,5 @@ class FileReader
 		void read_files();
 		
 };
+
+#endif

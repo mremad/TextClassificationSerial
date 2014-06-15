@@ -5,6 +5,8 @@
 //  Created by Mohamed Emad on 6/11/14.
 //  Copyright (c) 2014 Mohamed Emad. All rights reserved.
 //
+#ifndef _LABELFACTORY
+#define _LABELFACTORY
 
 #include "stdlib.h"
 #include <time.h>
@@ -28,3 +30,5 @@ class LabelFactory
     int** labeled_fv;
     int** unlabeled_fv;
 };
+
+#endif

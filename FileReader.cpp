@@ -2,12 +2,11 @@
 using namespace std;
 FileReader::FileReader(int docs_to_read, string document_path)
 {
-	ConsolePrint::print("File Reader initialized\n");
+	ConsolePrint::print_string("File Reader initialized\n");
 	num_docs=docs_to_read;
 	path=document_path;
 	processed_docs=0;
 	documents_size= new int[num_docs];
-	read_files();
 }
 
 //Read the content of the document in document_path into the array document_words

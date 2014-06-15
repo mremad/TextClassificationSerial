@@ -1,3 +1,6 @@
+#ifndef _TESTRESULTS
+#define _TESTRESULTS
+
 #include "FileReader.h"
 #include "FeatureConstructor.h"
 #include "EM.h"
@@ -8,7 +11,7 @@ class TestResults
 	int* documents_size;
 	int** feature_vector;
 	int* result;
-	int accuracy;
+	float accuracy;
 	string document_path;
 	string** data_list;
 	int number_documents;
@@ -20,3 +23,5 @@ public:
 	TestResults(string document_path,int number_documents,FeatureConstructor* feature_constructor,NaiveBayesClassifier* classifier);
 	void start_test();
 };
+
+#endif

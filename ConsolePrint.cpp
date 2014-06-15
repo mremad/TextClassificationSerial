@@ -1,13 +1,9 @@
 #include "ConsolePrint.h"
 
-static void print_string_array(char** arr)
-{
-	
-}
 
-void ConsolePrint::print(char* arr)
+void ConsolePrint::print_string(std::string arr)
 {
-	printf(arr);
+	printf("%s\n",arr.c_str());
 }
 
 void ConsolePrint::create_dummy_fv(int* vocab_size, int* document_size, int ** fv)

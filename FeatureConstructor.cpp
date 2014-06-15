@@ -59,7 +59,6 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             {
                 // if found, set the flag to true and replace the lablel with its index in the labellist
                 found= true;
-                data_list[i][0]=l+"";
             }
         }
         
@@ -69,7 +68,6 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             // add it to the list
             label_list[NUM_OF_LABELS]= data_list[i][0];
             // replace the label with its index in
-            data_list[i][0]= ""+NUM_OF_LABELS;
             // increment the number of labels
             NUM_OF_LABELS++;
         }
@@ -121,6 +119,30 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
     printf("Ended Vocab Extraction\n");
 }
 
+int FeatureConstructor::get_index_for_label(string label)
+{
+    int index = -1;
+    
+    for(int i = 0;i < NUM_OF_LABELS;i++)
+    {
+        if(label == label_list[i])
+        {
+            index = i;
+            break;
+        }
+    }
+    
+    return index;
+}
+
+void FeatureConstructor::convert_labels_integers(string ** data_list, int number_documents)
+{
+    for(int i = 0;i<number_documents;i++)
+    {
+        documents_labels[i] = get_index_for_label(data_list[i][0]);
+    }
+}
+
 
 
 //Builds feature vectors for all documents in document_feature_vectors from data_list
@@ -128,16 +150,18 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 {
     printf("Began Feature Construction\n");
     // set the number of rows to be equal number of documents
-    feature_vector= new int* [NUM_OF_DOCUMENTS];
+    feature_vector= new int* [number_documents];
+    documents_labels = (int*)malloc(sizeof(int)*number_documents);
+    convert_labels_integers(data_list, number_documents);
     
     // loop on every row and set number of columns to be equal of number of unique words
-    for(int i=0;i<NUM_OF_DOCUMENTS;i++)
+    for(int i=0;i<number_documents;i++)
     {
         feature_vector[i]= new int [NUM_OF_UNIQUE_WORDS+1];
     }
     
     // loop over every document
-    for(int i=0;i<NUM_OF_DOCUMENTS;i++)
+    for(int i=0;i<number_documents;i++)
     {
         // loop over every word in the vocab
         for(int j=0;j<NUM_OF_UNIQUE_WORDS;j++)
@@ -153,7 +177,7 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
             feature_vector[i][j+1]=count;
         }
         
-        feature_vector[i][0] = stoi(data_list[i][0]);
+        feature_vector[i][0] = documents_labels[i];
     }
     
     printf("Ended Feature Construction\n");

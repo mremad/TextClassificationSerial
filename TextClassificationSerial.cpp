@@ -6,18 +6,26 @@
 #include "FeatureConstructor.h"
 #include "FileReader.h"
 #include "LabelFactory.h"
+#include "TestResults.h"
 
-#define DATA_PATH_EMAD "/Users/Mohamed/Desktop/TextClassificationSerial/DocumentClassifierData.txt"
-#define DATA_PATH_MOUMEN
-#define DATA_PATH_SHAABAN "DocumentClassifierData.txt"
+#define DATA_PATH_EMAD "/Users/Mohamed/Desktop/TextClassificationSerial/TrainingData.txt"
+#define DATA_PATH_MOUMEN ""
+#define DATA_PATH_SHAABAN "TrainingData.txt"
+
+#define TEST_PATH_EMAD "/Users/Mohamed/Desktop/TextClassificationSerial/TestData.txt"
+#define TEST_PATH_MOUMEN ""
+#define TEST_PATH_SHAABAN "TestData.txt"
 
 int main(int argc, char* argv[])
 {
     
 	int document_size = 750;
     int desired_labeled = 40;
+    
+    int test_documents = 700;
 
-	FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
+	FileReader fr = FileReader(document_size,DATA_PATH_EMAD);
+    fr.read_files();
     
 	FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
     fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
@@ -31,11 +39,14 @@ int main(int argc, char* argv[])
     EM em = EM();
     em.run_em(&nc, fc.feature_vector , lf.labeled_fv, lf.unlabeled_fv, fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS-desired_labeled, desired_labeled, fc.NUM_OF_LABELS);
     
-	int label = nc.classify_unlabeled_document(fc.feature_vector[0],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);
-    printf("Number of labels: %d Chosen Label: %d\n",fc.NUM_OF_LABELS,label);
+    TestResults tr = TestResults(TEST_PATH_EMAD, test_documents, &fc, &nc);
+    tr.start_test();
     
-    label = nc.classify_unlabeled_document(fc.feature_vector[499],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);
-    printf("Number of labels: %d Chosen Label: %d\n",fc.NUM_OF_LABELS,label);
+	//int label = nc.classify_unlabeled_document(fc.feature_vector[0],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);
+    //printf("Number of labels: %d Chosen Label: %d\n",fc.NUM_OF_LABELS,label);
+    
+    //label = nc.classify_unlabeled_document(fc.feature_vector[499],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);
+    //printf("Number of labels: %d Chosen Label: %d\n",fc.NUM_OF_LABELS,label);
     
     /*label = nc.classify_unlabeled_document(fc.feature_vector[1000],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);
     printf("Number of labels: %d Chosen Label: %d\n",fc.NUM_OF_LABELS,label);
