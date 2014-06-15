@@ -68,6 +68,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
         {
             // add it to the list
             label_list[NUM_OF_LABELS]= data_list[i][0];
+            printf("Index: %d\tLabel Name: %s\n",NUM_OF_LABELS,data_list[i][0].c_str());
             // replace the label with its index in
             data_list[i][0]= to_string(NUM_OF_LABELS);
             // increment the number of labels

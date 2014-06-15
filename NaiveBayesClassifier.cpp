@@ -101,7 +101,7 @@ int NaiveBayesClassifier::classify_unlabeled_document(int * unlabeled_feature_ve
 {
 	long double max_prob = N_INF;
 	int label = -1;
-
+    
 	for(int i = 0;i < number_labels;i++)
 	{
 		long double prob = (long double)NaiveBayesClassifier::prob_document_label(unlabeled_feature_vector,number_unique_words,i);
@@ -134,7 +134,7 @@ long double NaiveBayesClassifier::prob_document_label(int * feature_vector, int 
 {
 	long double result = log10(second_parameter[label]);
 
-	//printf("result: %f \n",result);
+	//printf("Label: %d Prior: %Lf \n",label,result);
 
 	for(int i = 0;i<number_unique_words;i++)
 	{
@@ -144,6 +144,7 @@ long double NaiveBayesClassifier::prob_document_label(int * feature_vector, int 
 		//printf("result:  %f %d = %e \n",first_parameter[label][i], feature_vector[i] ,result);
 	}
 
+    //printf("Label: %d Final Prob: %Lf\n",label,result);
 	return result;
 }
 

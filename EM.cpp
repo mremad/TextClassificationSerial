@@ -33,7 +33,7 @@ bool EM::check_if_converged(long double** old_likelihood, long double* old_prior
     
     long double total_diff = 0;
     
-    long double threshold = 0.01;
+    long double threshold = 0.0001;
     
     for(int i = 0;i<number_labels;i++)
     {
@@ -44,6 +44,8 @@ bool EM::check_if_converged(long double** old_likelihood, long double* old_prior
         
         total_diff += fabs(old_prior[i]-new_prior[i]);
     }
+    
+    printf("Total Difference: %Lf\n",total_diff);
     
     if(total_diff < threshold)
         result = true;
@@ -78,9 +80,9 @@ void EM::run_em(NaiveBayesClassifier* classifier, int** feature_vectors, int** l
         printf("Performing E Step\n");
         classify_all_unlabeled_documents(classifier, unlabeled_docs, number_unique_words, number_unlabeled_documents, number_labels);
         
-        ConsolePrint::print_2d_int(number_unique_words, number_unlabeled_documents, unlabeled_docs);
-        ConsolePrint::print_2d_int(number_unique_words, number_labeled_documents, labeled_docs);
-        ConsolePrint::print_2d_int(number_unique_words, number_labeled_documents+number_unlabeled_documents, feature_vectors);
+        //ConsolePrint::print_2d_int(number_unique_words, number_unlabeled_documents, unlabeled_docs);
+        //ConsolePrint::print_2d_int(number_unique_words, number_labeled_documents, labeled_docs);
+        //ConsolePrint::print_2d_int(number_unique_words, number_labeled_documents+number_unlabeled_documents, feature_vectors);
 		
         /*M Step*/
         
