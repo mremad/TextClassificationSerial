@@ -3,8 +3,8 @@
 #include "EM.h"
 class TestResults
 {
-	FeatureConstructor feature_constructor;
-	NaiveBayesClassifier classifier;
+	FeatureConstructor* feature_constructor;
+	NaiveBayesClassifier* classifier;
 	int* documents_size;
 	int** feature_vector;
 	int* result;
@@ -17,6 +17,6 @@ class TestResults
 	void classify_documents();
 	void check_accuracy();
 public:
-	TestResults(string document_path,int number_documents,FeatureConstructor feature_constructor,NaiveBayesClassifier classifier);
+	TestResults(string document_path,int number_documents,FeatureConstructor* feature_constructor,NaiveBayesClassifier* classifier);
 	void start_test();
-}
+};

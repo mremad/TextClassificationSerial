@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	int document_size = 750;
     int desired_labeled = 40;
 
-	FileReader fr = FileReader(document_size,DATA_PATH_EMAD);
+	FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
     
 	FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
     fc.extract_vocab(fr.data_list, fr.documents_size, document_size);

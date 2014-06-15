@@ -59,7 +59,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             {
                 // if found, set the flag to true and replace the lablel with its index in the labellist
                 found= true;
-                data_list[i][0]=to_string(l);
+                data_list[i][0]=l+"";
             }
         }
         
@@ -68,9 +68,8 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
         {
             // add it to the list
             label_list[NUM_OF_LABELS]= data_list[i][0];
-            printf("Index: %d\tLabel Name: %s\n",NUM_OF_LABELS,data_list[i][0].c_str());
             // replace the label with its index in
-            data_list[i][0]= to_string(NUM_OF_LABELS);
+            data_list[i][0]= ""+NUM_OF_LABELS;
             // increment the number of labels
             NUM_OF_LABELS++;
         }
