@@ -1,10 +1,8 @@
-#ifndef _FEATURECONSTRUCTOR
-#define _FEATURECONSTRUCTOR
-
 #include <iostream>
 #include <fstream>
 #include <string>
-
+#include "superHash.h"
+#include "LinkedList.h"
 using namespace std;
 
 
@@ -12,17 +10,14 @@ using namespace std;
 class FeatureConstructor
 {
     bool check_if_feature(string word);
-    
-    int * documents_labels;
-    
-    int get_index_for_label(string label);
-    void convert_labels_integers(string ** data_list, int number_documents);
-    
 	public:
     FeatureConstructor();
     FeatureConstructor(int* document_size, int number_documents);
 		//1D array of the unique vocabulary. Size: N
 		string* vocab_list;
+    
+        LinkedList* hash_list;
+        int max_List_Size;
 		//2D array of the labeled documents feature vectors. Size:DxN
 		int ** feature_vector;
     
@@ -35,10 +30,15 @@ class FeatureConstructor
 		//Number of labels
 		int NUM_OF_LABELS;
     
+    int collissions;
+    
+        //uint32_t create_hash( std::string data, int len);
+        //uint32_t hash_inc(const char * data, int len, uint32_t hash);
+    
+        int hash_str(string word, int tableSize);
+    
 		void extract_vocab(string** data_list, int* documents_size, int number_documents);
 
 		//Should handle both cases of labeled/unlabeled
 		void construct_feature_vectors(string** data_list, int* documents_size, int number_documents);
 };
-
-#endif

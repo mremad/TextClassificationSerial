@@ -1,7 +1,16 @@
- #include "FeatureConstructor.h"
-#include <iostream>
-#include <fstream>
-#include <string>
+#include "FeatureConstructor.h" 
+#undef get16bits
+#if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) \
+|| defined(_MSC_VER) || defined (__BORLANDC__) || defined (__TURBOC__)
+#define get16bits(d) (*((const uint16_t *) (d)))
+#endif
+
+#if !defined (get16bits)
+#define get16bits(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8)\
++(uint32_t)(((const uint8_t *)(d))[0]) )
+#endif
+
+#define HASH_TABLE_SIZE 2039
 
 using namespace std;
 
@@ -11,19 +20,29 @@ FeatureConstructor::FeatureConstructor()
 }
 
 
+int calculate_table_size(int* documents_size, int number_documents)
+{
+    int result=0;
+    for(int i=0;i<number_documents;i++)
+        result+=documents_size[i];
+    return  result;
+}
+
 FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
 {
     NUM_OF_LABELS=0;
     NUM_OF_UNIQUE_WORDS=0;
     NUM_OF_DOCUMENTS= number_documents;
-    int totalSize=0;
-    for(int i=0;i<NUM_OF_DOCUMENTS;i++)
-    {
-        totalSize+= document_size[i];
-    }
+    int totalSize=calculate_table_size(document_size, number_documents);
     
     vocab_list= new string[totalSize];
     label_list= new string[number_documents];
+    hash_list= new LinkedList[HASH_TABLE_SIZE];
+    max_List_Size=0;
+    for(int i=0;i<totalSize;i++)
+    {
+        hash_list[i]= *new LinkedList();
+    }
 }
 
 bool FeatureConstructor::check_if_feature(string word)
@@ -41,10 +60,35 @@ bool FeatureConstructor::check_if_feature(string word)
     return check;
 }
 
+#define A 54059 /* a prime */
+#define B 76963 /* another prime */
+#define C 86969 /* yet another prime */
+int FeatureConstructor::hash_str(string word, int tableSize)
+{
+    int h = 31 /* also prime */;
+    
+    char * charList= (char *)malloc(word.length()*sizeof(char));
+    for(int i=0;i<word.length();i++)
+        charList[i]= word[i];
+    
+    
+    while (*charList) {
+       // h = (h * A) ^ (charList[0] * B);
+        charList++;
+    }
+    return h%tableSize; // or return h % C;
+}
+
+
+
+
+
 //Builds a list of all unique words in vocab_list from data_list
 void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents)
 {
-  
+    
+    
+    superHash hashObj= *new superHash();
     
     // loop over all documents and extract all labels
     printf("Began Vocab Extraction\n");
@@ -59,6 +103,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             {
                 // if found, set the flag to true and replace the lablel with its index in the labellist
                 found= true;
+                data_list[i][0]=l;
             }
         }
         
@@ -68,6 +113,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             // add it to the list
             label_list[NUM_OF_LABELS]= data_list[i][0];
             // replace the label with its index in
+            data_list[i][0]= NUM_OF_LABELS;
             // increment the number of labels
             NUM_OF_LABELS++;
         }
@@ -96,51 +142,32 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             if(!check_if_feature(data_list[i][j]))
                 continue;
             
-            // search if the word is already in the vocab list
-            bool found=false;
-            for(int k=0;k<NUM_OF_UNIQUE_WORDS;k++)
+            // calculate the hash index
+            int hashIndex= superHash::create_hash(data_list[i][j], data_list[i][j].length(),HASH_TABLE_SIZE);
+            // if the word wasn't already added to the list in the specified index
+            if(!hash_list[hashIndex].Exists(data_list[i][j]))
             {
-                // if word is found, set the flag to true
-                if(data_list[i][j]== vocab_list[k])
-                    found=true;
-            }
-            
-            // if the word is new, add it to the vocab list
-            if(!found)
-            {
-                // add new words to vocab and update number of unique words
-                vocab_list[NUM_OF_UNIQUE_WORDS]= data_list[i][j];
+                // append word to the list
+                hash_list[hashIndex].Append((data_list[i][j]),NUM_OF_UNIQUE_WORDS);
+                // update the vocablist
+                vocab_list[NUM_OF_UNIQUE_WORDS]=data_list[i][j];
                 NUM_OF_UNIQUE_WORDS++;
             }
            
         }
     }
     
+    /*
+     // to print the array of lists
+    for(int i=0;i<HASH_TABLE_SIZE;i++)
+    {
+        hash_list[i].Print();
+        printf("\n");
+        
+    }*/
+    
+    printf("No of unique wordsis %d \n",NUM_OF_UNIQUE_WORDS );
     printf("Ended Vocab Extraction\n");
-}
-
-int FeatureConstructor::get_index_for_label(string label)
-{
-    int index = -1;
-    
-    for(int i = 0;i < NUM_OF_LABELS;i++)
-    {
-        if(label == label_list[i])
-        {
-            index = i;
-            break;
-        }
-    }
-    
-    return index;
-}
-
-void FeatureConstructor::convert_labels_integers(string ** data_list, int number_documents)
-{
-    for(int i = 0;i<number_documents;i++)
-    {
-        documents_labels[i] = get_index_for_label(data_list[i][0]);
-    }
 }
 
 
@@ -150,34 +177,36 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 {
     printf("Began Feature Construction\n");
     // set the number of rows to be equal number of documents
-    feature_vector= new int* [number_documents];
-    documents_labels = (int*)malloc(sizeof(int)*number_documents);
-    convert_labels_integers(data_list, number_documents);
+    feature_vector= new int* [NUM_OF_DOCUMENTS];
+    int hashIndex, position;
     
     // loop on every row and set number of columns to be equal of number of unique words
-    for(int i=0;i<number_documents;i++)
+    for(int i=0;i<NUM_OF_DOCUMENTS;i++)
     {
-        feature_vector[i]= new int [NUM_OF_UNIQUE_WORDS+1];
+        feature_vector[i]= new int [NUM_OF_UNIQUE_WORDS];
     }
     
     // loop over every document
-    for(int i=0;i<number_documents;i++)
+    for(int i=0;i<NUM_OF_DOCUMENTS;i++)
     {
-        // loop over every word in the vocab
-        for(int j=0;j<NUM_OF_UNIQUE_WORDS;j++)
+        for(int j=0;j<documents_size[i];j++)
         {
-            int count =0;
-            //loop over all words in this document to see how many copy of this unique word exits
-            for(int k=0;k<documents_size[i];k++)
+            // check if word can be used as feature word
+            if(!check_if_feature(data_list[i][j]))
+                continue;
+            // calculate index
+            hashIndex= superHash::create_hash(data_list[i][j], data_list[i][j].length(),HASH_TABLE_SIZE);
+            // get the position of the word int he vocablist
+            position= hash_list[hashIndex].getPositionValue(data_list[i][j]);
+            if(position==-1)
+                continue;
+            else
             {
-                if(vocab_list[j]== data_list[i][k])
-                    count ++;
+                // increment value in feature vector
+                feature_vector[i][position]++;
             }
-            // update the value in the feature vector;
-            feature_vector[i][j+1]=count;
+            
         }
-        
-        feature_vector[i][0] = documents_labels[i];
     }
     
     printf("Ended Feature Construction\n");
