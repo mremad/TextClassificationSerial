@@ -16,6 +16,8 @@
 		D944FB8E194756CB00CD245C /* TextClassificationSerial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D944FB88194756CB00CD245C /* TextClassificationSerial.cpp */; };
 		D95C61B6194CF86D00A3177F /* LabelFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D95C61B4194CF86D00A3177F /* LabelFactory.cpp */; };
 		D9C94BD2194DE1270027C283 /* TestResults.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9C94BD0194DE1270027C283 /* TestResults.cpp */; };
+		D9CE7737194F9BEE00D47883 /* LinkedList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9CE7733194F9BEE00D47883 /* LinkedList.cpp */; };
+		D9CE7738194F9BEE00D47883 /* SuperHash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D9CE7735194F9BEE00D47883 /* SuperHash.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -51,6 +53,10 @@
 		D9C94BD1194DE1270027C283 /* TestResults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestResults.h; path = ../../TestResults.h; sourceTree = "<group>"; };
 		D9C94BD3194DE61A0027C283 /* TestData.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = TestData.txt; path = ../../TestData.txt; sourceTree = "<group>"; };
 		D9C94BD4194DE61A0027C283 /* TrainingData.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = TrainingData.txt; path = ../../TrainingData.txt; sourceTree = "<group>"; };
+		D9CE7733194F9BEE00D47883 /* LinkedList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LinkedList.cpp; path = ../../LinkedList.cpp; sourceTree = "<group>"; };
+		D9CE7734194F9BEE00D47883 /* LinkedList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LinkedList.h; path = ../../LinkedList.h; sourceTree = "<group>"; };
+		D9CE7735194F9BEE00D47883 /* SuperHash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SuperHash.cpp; path = ../../SuperHash.cpp; sourceTree = "<group>"; };
+		D9CE7736194F9BEE00D47883 /* SuperHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SuperHash.h; path = ../../SuperHash.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +89,10 @@
 		D944FB741947569C00CD245C /* TextClassificationSerial */ = {
 			isa = PBXGroup;
 			children = (
+				D9CE7733194F9BEE00D47883 /* LinkedList.cpp */,
+				D9CE7734194F9BEE00D47883 /* LinkedList.h */,
+				D9CE7735194F9BEE00D47883 /* SuperHash.cpp */,
+				D9CE7736194F9BEE00D47883 /* SuperHash.h */,
 				D9C94BD3194DE61A0027C283 /* TestData.txt */,
 				D9C94BD4194DE61A0027C283 /* TrainingData.txt */,
 				D9C94BD0194DE1270027C283 /* TestResults.cpp */,
@@ -159,10 +169,12 @@
 				D944FB8B194756CB00CD245C /* FeatureConstructor.cpp in Sources */,
 				D944FB89194756CB00CD245C /* ConsolePrint.cpp in Sources */,
 				D9C94BD2194DE1270027C283 /* TestResults.cpp in Sources */,
+				D9CE7738194F9BEE00D47883 /* SuperHash.cpp in Sources */,
 				D944FB8E194756CB00CD245C /* TextClassificationSerial.cpp in Sources */,
 				D944FB8C194756CB00CD245C /* FileReader.cpp in Sources */,
 				D95C61B6194CF86D00A3177F /* LabelFactory.cpp in Sources */,
 				D944FB8D194756CB00CD245C /* NaiveBayesClassifier.cpp in Sources */,
+				D9CE7737194F9BEE00D47883 /* LinkedList.cpp in Sources */,
 				D944FB8A194756CB00CD245C /* EM.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

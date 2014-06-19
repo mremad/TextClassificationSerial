@@ -30,6 +30,37 @@ void FileReader::read_single_file(string line, string* document_words)
 	}
 }
 
+void FileReader::read_files_per_label(int docs_per_label, int num_labels)
+{
+    string** new_data_list = (string**)malloc(sizeof(string*)*docs_per_label*num_labels);
+    int * new_docs_size = (int*)malloc(sizeof(int)*docs_per_label*num_labels);
+    string curr_label = data_list[0][0];
+    int curr_new_doc_index = 0;
+    int read_docs_per_label = 0;
+    
+    for(int i = 0;i < num_docs;i++)
+    {
+        if(read_docs_per_label == docs_per_label && data_list[i][0] == curr_label)
+        {
+            continue;
+        }
+        else if(read_docs_per_label == docs_per_label && data_list[i][0] != curr_label)
+        {
+            read_docs_per_label = 0;
+            curr_label = data_list[i][0];
+        }
+        
+
+        new_data_list[curr_new_doc_index] = data_list[i];
+        new_docs_size[curr_new_doc_index] = documents_size[i];
+        curr_new_doc_index++;
+        read_docs_per_label++;
+    }
+    
+    data_list = new_data_list;
+    documents_size = new_docs_size;
+}
+
 //Read all the data set into data_list array
 void FileReader::read_files()
 {

@@ -31,7 +31,7 @@ void NaiveBayesClassifier::calculate_likelihood(int** feature_vectors,int number
 		int all_label_occ = calculate_all_words_label_occurence(feature_vectors,number_unique_words,number_documents,i);
 		for(int j = 0; j < number_unique_words;j++)
 		{
-			first_parameter[i][j] = (long double)(calculate_single_word_label_occurence(feature_vectors,j,number_documents,i) + 1) *1 /
+			first_parameter[i][j] = (long double)(calculate_single_word_label_occurence(feature_vectors,j,number_documents,i) + 1)/
 				(long double)(all_label_occ+number_unique_words);
 
 			//printf("%f ",first_parameter[i][j]);

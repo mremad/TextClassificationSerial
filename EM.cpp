@@ -74,7 +74,7 @@ void EM::run_em(NaiveBayesClassifier* classifier, int** feature_vectors, int** l
     
 	for(;;)
 	{
-        
+        break;
 		/*E Step*/
         
         printf("Performing E Step\n");

@@ -18,11 +18,11 @@
 #include <string>
 
 
-class superHash
+class SuperHash
 {
     
     public :
-    superHash();
+    SuperHash();
      static  uint32_t create_hash( std::string data, int len,int tableSize);
      static  uint32_t hash_inc(const char * data, int len, uint32_t hash);
     

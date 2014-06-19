@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Moumen Mohamed. All rights reserved.
 //
 
-#include "superHash.h"
+#include "SuperHash.h"
 
 #undef get16bits
 #if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) \
@@ -20,13 +20,13 @@
 #endif
 
 
-superHash:: superHash()
+SuperHash:: SuperHash()
 {
     
 }
 
 
- uint32_t superHash::hash_inc(const char * data, int len, uint32_t hash)
+ uint32_t SuperHash::hash_inc(const char * data, int len, uint32_t hash)
 {
     uint32_t tmp;
     int rem;
@@ -72,7 +72,7 @@ superHash:: superHash()
     return hash;
 }
 
-uint32_t superHash::create_hash(std::string data, int len, int tablesize)
+uint32_t SuperHash::create_hash(std::string data, int len, int tablesize)
 {
     char * charList= (char *)malloc(len*sizeof(char));
     for(int i=0;i<len;i++)

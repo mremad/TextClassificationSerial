@@ -22,6 +22,7 @@ class FileReader
 		int* documents_size;
 
 		void read_files();
+        void read_files_per_label(int docs_per_label, int num_labels);
 		
 };
 
