@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     
     int test_documents = 7500;
 
-	FileReader fr = FileReader(document_size,DATA_PATH_EMAD);
+	FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
     fr.read_files();
     fr.read_files_per_label(desired_labeled/num_labels, num_labels);
     
@@ -34,6 +34,7 @@ int main(int argc, char* argv[])
     fc.extract_vocab(fr.data_list, fr.documents_size, desired_labeled);
     fc.construct_feature_vectors(fr.data_list, fr.documents_size, desired_labeled);
     
+	fr.deallocate();
     //LabelFactory lf = LabelFactory();
     //lf.select_labeled_docs(fc.feature_vector, fc.NUM_OF_DOCUMENTS, desired_labeled, fc.NUM_OF_LABELS);
     
@@ -48,7 +49,7 @@ int main(int argc, char* argv[])
     /*EM em = EM();
     em.run_em(&nc, fc.feature_vector , lf.labeled_fv, lf.unlabeled_fv, fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS-desired_labeled, desired_labeled, fc.NUM_OF_LABELS);*/
     
-    TestResults tr = TestResults(TEST_PATH_EMAD, test_documents, &fc, &nc);
+    TestResults tr = TestResults(TEST_PATH_SHAABAN, test_documents, &fc, &nc);
     tr.start_test();
     
 	//int label = nc.classify_unlabeled_document(fc.feature_vector[0],fc.NUM_OF_UNIQUE_WORDS,fc.NUM_OF_LABELS);

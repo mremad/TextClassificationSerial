@@ -162,7 +162,6 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
         
     }*/
     
-    printf("No of unique wordsis %d \n",NUM_OF_UNIQUE_WORDS );
     printf("Ended Vocab Extraction\n");
 }
 

@@ -42,6 +42,7 @@ void FileReader::read_files_per_label(int docs_per_label, int num_labels)
     {
         if(read_docs_per_label == docs_per_label && data_list[i][0] == curr_label)
         {
+			delete [] data_list[i];
             continue;
         }
         else if(read_docs_per_label == docs_per_label && data_list[i][0] != curr_label)
@@ -59,8 +60,17 @@ void FileReader::read_files_per_label(int docs_per_label, int num_labels)
     
     data_list = new_data_list;
     documents_size = new_docs_size;
+	num_docs=docs_per_label*num_labels;
 }
 
+//free the memory
+void FileReader::deallocate()
+{
+	for(int i=0;i<num_docs;i++)
+	{
+		delete[] data_list[i];
+	}
+}
 //Read all the data set into data_list array
 void FileReader::read_files()
 {

@@ -23,6 +23,7 @@ class FileReader
 
 		void read_files();
         void read_files_per_label(int docs_per_label, int num_labels);
+		void deallocate();
 		
 };
 
