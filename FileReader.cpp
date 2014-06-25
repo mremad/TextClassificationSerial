@@ -75,7 +75,7 @@ void FileReader::deallocate()
 void FileReader::read_files()
 {
 	string line;
-	data_list=new string*[num_docs];
+	data_list = (string**)malloc(sizeof(string*)*num_docs);
 	ifstream myfile (path);
 	if (myfile.is_open())
 	{

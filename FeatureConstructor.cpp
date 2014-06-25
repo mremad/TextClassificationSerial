@@ -1,19 +1,6 @@
-#include "FeatureConstructor.h" 
-#undef get16bits
-#if (defined(__GNUC__) && defined(__i386__)) || defined(__WATCOMC__) \
-|| defined(_MSC_VER) || defined (__BORLANDC__) || defined (__TURBOC__)
-#define get16bits(d) (*((const uint16_t *) (d)))
-#endif
-
-#if !defined (get16bits)
-#define get16bits(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8)\
-+(uint32_t)(((const uint8_t *)(d))[0]) )
-#endif
+#include "FeatureConstructor.h"
 
 #define HASH_TABLE_SIZE 2039
-#define A 54059 /* a prime */
-#define B 76963 /* another prime */
-#define C 86969 /* yet another prime */
 
 using namespace std;
 
@@ -42,7 +29,7 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
     label_list= new string[number_documents];
     hash_list= new LinkedList[HASH_TABLE_SIZE];
     max_List_Size=0;
-    for(int i=0;i<totalSize;i++)
+    for(int i=0;i<HASH_TABLE_SIZE;i++)
     {
         hash_list[i]= *new LinkedList();
     }
@@ -197,8 +184,7 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
     printf("Began Feature Construction\n");
     int hashIndex, position;
     // set the number of rows to be equal number of documents
-    feature_vector= new int* [number_documents];
-    
+    feature_vector=  (int**)malloc(sizeof(int*)*number_documents);
     documents_labels = (int*)malloc(sizeof(int)*number_documents);
     convert_labels_integers(data_list, number_documents);
     
@@ -207,7 +193,12 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
     // loop on every row and set number of columns to be equal of number of unique words
     for(int i=0;i<number_documents;i++)
     {
-        feature_vector[i]= new int [NUM_OF_UNIQUE_WORDS+1];
+        
+		feature_vector[i]=(int*)malloc(sizeof(int)*(NUM_OF_UNIQUE_WORDS+1));
+		for(int j=0;j<NUM_OF_UNIQUE_WORDS+1;j++)
+		{
+			feature_vector[i][j] = 0;
+		}
     }
     
     // loop over every document

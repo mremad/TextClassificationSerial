@@ -35,11 +35,13 @@ void TestResults::extract_feature_vector()
 
 void TestResults::classify_documents()
 {
+    printf("Classifying Test Data...\n");
 	for(int i=0;i<number_documents;i++)
 	{
 		result[i]=classifier->classify_unlabeled_document(feature_vector[i],feature_constructor->NUM_OF_UNIQUE_WORDS,feature_constructor->NUM_OF_LABELS);
         //printf("%d ",result[i]);
 	}
+    printf("Done Classifying Test Data\n");
     //printf("\n");
 }
 
