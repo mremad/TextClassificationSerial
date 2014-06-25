@@ -225,3 +225,4 @@ stdafx.h
 *.pbxproj
 
 *.xcbkptlist
+*.sln
