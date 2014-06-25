@@ -10,4 +10,4 @@
 #define TEST_PATH_MOUMEN ""
 #define TEST_PATH_SHAABAN "TestData.txt"
 
-#define CUDA_
+#define CUDA
