@@ -24,7 +24,6 @@ class FileReader
 		int* documents_size;
 
 		void read_files();
-        void read_files_per_label(int docs_per_label, int num_labels);
 		void label_factory(int desired_labeled, int desired_unlabeled, int num_labels, string** Udata_out, string** Ldata_out);
 		void deallocate();
 		
