@@ -9,7 +9,7 @@ class TestResults
 	FeatureConstructor* feature_constructor;
 	NaiveBayesClassifier* classifier;
 	int* documents_size;
-	int** feature_vector;
+	int* feature_vector;
 	int* result;
 	float accuracy;
 	string document_path;

@@ -38,7 +38,7 @@ void TestResults::classify_documents()
     printf("Classifying Test Data...\n");
 	for(int i=0;i<number_documents;i++)
 	{
-		result[i]=classifier->classify_unlabeled_document(feature_vector[i],feature_constructor->NUM_OF_UNIQUE_WORDS,feature_constructor->NUM_OF_LABELS);
+		result[i]=classifier->classify_unlabeled_document(feature_vector,feature_constructor->num_unique_words,feature_constructor->num_labels);
         //printf("%d ",result[i]);
 	}
     printf("Done Classifying Test Data\n");
@@ -49,7 +49,7 @@ void TestResults::check_accuracy()
 {
 	for(int i=0;i<number_documents;i++)
 	{
-		if(result[i]==feature_vector[i][0])
+		if(result[i]==feature_vector[i])
 		{
 			accuracy++;
 		}

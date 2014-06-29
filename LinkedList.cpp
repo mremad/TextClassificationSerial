@@ -10,6 +10,15 @@
 
 
 
+void LinkedList::Destroy()
+{
+	while(head)
+	{
+		Node* old = head;
+		head = head->Next();
+		delete old;
+	}
+}
 
 /**
  * Print the contents of the list

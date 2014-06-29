@@ -10,4 +10,8 @@
 #define TEST_PATH_MOUMEN ""
 #define TEST_PATH_SHAABAN "TestData.txt"
 
+#define HASH_TABLE_SIZE 2039
+
+#define MAX_NUM_LABELS 20
+
 #define CUDA

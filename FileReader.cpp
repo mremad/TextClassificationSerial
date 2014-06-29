@@ -59,6 +59,9 @@ void FileReader::read_files_per_label(int docs_per_label, int num_labels)
     }
     
     data_list = new_data_list;
+
+	delete[] documents_size;
+
     documents_size = new_docs_size;
 	num_docs=docs_per_label*num_labels;
 }
@@ -70,6 +73,9 @@ void FileReader::deallocate()
 	{
 		delete[] data_list[i];
 	}
+
+	delete[] data_list;
+	delete[] documents_size;
 }
 //Read all the data set into data_list array
 void FileReader::read_files()
