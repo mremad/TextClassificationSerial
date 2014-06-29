@@ -23,7 +23,7 @@ long double *  NaiveBayesClassifier::get_prior()
     return second_parameter;
 }
 
-#ifdef CUDA
+#ifdef CUDA_EMAD
 
 __device__ int calculate_single_word_label_occurence(int * feature_vectors,size_t pitch, int word_index, int number_documents, int label)
 {
@@ -145,7 +145,7 @@ void NaiveBayesClassifier::calculate_likelihood(int** feature_vectors,int number
 
 #else
 
-void NaiveBayesClassifier::calculate_likelihood(int** feature_vectors,int number_unique_words, int number_documents, int number_labels)
+void NaiveBayesClassifier::calculate_likelihood(int ** feature_vectors,int number_unique_words, int number_documents, int number_labels)
 {
     printf("Calculating First parameter: \n");
 	for(int i = 0;i < number_labels;i++)

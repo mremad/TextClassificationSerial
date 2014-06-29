@@ -13,7 +13,7 @@ class NaiveBayesClassifier
 
 
 	
-	#ifdef CUDA
+	#ifdef CUDA_EMAD
 
 	#else
 	int calculate_single_word_label_occurence(int ** feature_vectors, int word_index, int number_documents, int label);

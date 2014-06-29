@@ -24,6 +24,7 @@ class FeatureConstructor
     void	convert_labels_integers(string ** data_list, int number_documents);
 	void	FeatureConstructor::extract_labels(string** data_list, int number_documents);
 	int		FeatureConstructor::get_document_index(int* documents_size, int doc_num);
+	void	FeatureConstructor::extract_documents_indexes(int* documents_size,int number_documents);
 	
     public:
     FeatureConstructor();
@@ -32,6 +33,7 @@ class FeatureConstructor
 
     //1D array of the labeled documents feature vectors. Size:DxN
     int *	feature_vector;
+	int	*	documents_indexes;
 	int *	documents_labels;
     // 1D array of labels
     string*	label_list;

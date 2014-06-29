@@ -96,6 +96,16 @@ void FeatureConstructor::extract_labels(string** data_list, int number_documents
     printf("Labels found: %d\n",num_labels);
 }
 
+void FeatureConstructor::extract_documents_indexes(int* documents_size, int number_documents)
+{
+	documents_indexes = (int*)malloc(sizeof(int)*number_documents);
+
+	for(int i = 0;i < number_documents;i++)
+	{
+		documents_indexes[i] = get_document_index(documents_size,i);
+	}
+}
+
 //Builds a list of all unique words in vocab_list from data_list
 void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents)
 {
@@ -104,6 +114,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
     printf("Began Vocab Extraction\n");
     
 	extract_labels(data_list,number_documents);
+	extract_documents_indexes(documents_size, number_documents);
 
     // loop over documents
     for(int i=0;i<number_documents; i++)
@@ -146,7 +157,6 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
     
     printf("Ended Vocab Extraction\n");
 }
-
 
 int FeatureConstructor::get_index_for_label(string label)
 {
@@ -222,12 +232,12 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 				position = hash_list[hashIndex].getPositionValue(data_list[i][j]);
 			}
 
-			feature_vector[get_document_index(documents_size,i) + j] = position;
+			feature_vector[documents_indexes[i] + j] = position;
             
-			//printf("%i ",feature_vector[get_document_index(documents_size,i) + j]);
+			printf("%i ",feature_vector[get_document_index(documents_size,i) + j]);
         }
-		//printf("\n");
-		//printf("\n");
+		printf("\n");
+		printf("\n");
         
     }
 
