@@ -66,6 +66,48 @@ void FileReader::read_files_per_label(int docs_per_label, int num_labels)
 	num_docs=docs_per_label*num_labels;
 }
 
+
+void FileReader::label_factory(int desired_labeled, int desired_unlabeled, int num_labels, string** Udata_out, string** Ldata_out)
+{
+	string last_label="";
+	int docs_per_label = desired_labeled/num_labels;
+	int docs_per_unlabel = desired_unlabeled/num_labels;
+	int curr_docs_in_label=0;
+	int curr_docs_in_unlabel=0;
+	desired_labeled--;
+	desired_unlabeled--;
+	documents_size_labeled= new int[desired_labeled];
+	documents_size_unlabeled= new int[desired_unlabeled];
+	for(int i=0;i<num_docs && (desired_labeled+desired_unlabeled>=-1);i++)
+	{
+		if(data_list[i][0].compare(last_label)!=0)
+		{
+			Ldata_out[desired_labeled]=data_list[i];
+			documents_size_labeled[desired_labeled] = documents_size[i];
+			printf("Labeled %d = %s\n",desired_labeled,data_list[i][0].c_str());
+			desired_labeled--;
+			last_label = data_list[i][0];
+			curr_docs_in_label = 1;
+			curr_docs_in_unlabel=0;
+		}
+		else if(data_list[i][0].compare(last_label)==0 && curr_docs_in_label<docs_per_label)
+		{
+			Ldata_out[desired_labeled]=data_list[i];
+			documents_size_labeled[desired_labeled] = documents_size[i];
+			printf("Labeled %d = %s\n",desired_labeled,data_list[i][0].c_str());
+			desired_labeled--;
+			curr_docs_in_label++;
+		}
+		else if(data_list[i][0].compare(last_label)==0 && desired_unlabeled>=0 && curr_docs_in_unlabel<docs_per_unlabel)
+		{
+			Udata_out[desired_unlabeled]=data_list[i];
+			documents_size_unlabeled[desired_unlabeled] = documents_size[i];
+			printf("UnLabeled %d = %s\n",desired_unlabeled,data_list[i][0].c_str());
+			desired_unlabeled--;
+			curr_docs_in_unlabel++;
+		}
+	}
+}
 //free the memory
 void FileReader::deallocate()
 {

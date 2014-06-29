@@ -15,18 +15,24 @@ int main(int argc, char* argv[])
     int start_time;
 	int end_time;
 	int document_size = 11290; // max 11290
-    int desired_labeled = 20; // max 5500
+    int desired_labeled = 40; // max 5500
     int num_labels = 20;
+	int desired_unlabeled=40;
     
     int test_documents = 7500;
 
 	FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
     fr.read_files();
-    fr.read_files_per_label(desired_labeled/num_labels, num_labels);
-    
-	FeatureConstructor fc = FeatureConstructor(fr.documents_size,desired_labeled);
-    fc.extract_vocab(fr.data_list, fr.documents_size, desired_labeled);
-    fc.construct_feature_vectors(fr.data_list, fr.documents_size, desired_labeled);
+	string** dataU;
+	string** dataL;
+	dataU = (string**) malloc(sizeof(string*));
+	dataL = (string**) malloc(sizeof(string*));
+	
+    fr.label_factory(desired_labeled, desired_unlabeled, num_labels,dataU,dataL);
+    printf("String 1= %s",dataU[0][0].c_str());
+	FeatureConstructor fc = FeatureConstructor(fr.documents_size_labeled,desired_labeled);
+    fc.extract_vocab(dataL, fr.documents_size_labeled, desired_labeled);
+    fc.construct_feature_vectors(dataL, fr.documents_size_labeled, desired_labeled);
     
 	fr.deallocate();
     //LabelFactory lf = LabelFactory();
