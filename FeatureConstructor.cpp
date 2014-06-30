@@ -114,7 +114,6 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
     printf("Began Vocab Extraction\n");
     
 	extract_labels(data_list,number_documents);
-	extract_documents_indexes(documents_size, number_documents);
 
     // loop over documents
     for(int i=0;i<number_documents; i++)
@@ -207,6 +206,7 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
     documents_labels = (int*)malloc(sizeof(int)*number_documents);
 
     convert_labels_integers(data_list, number_documents);
+	extract_documents_indexes(documents_size, number_documents);
     
     // loop on every row and set number of columns to be equal of number of unique words
     for(int i=0;i<totalSize;i++)
@@ -234,21 +234,21 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 
 			feature_vector[documents_indexes[i] + j] = position;
             
-			printf("%i ",feature_vector[get_document_index(documents_size,i) + j]);
+			//printf("%i ",feature_vector[get_document_index(documents_size,i) + j]);
         }
-		printf("\n");
-		printf("\n");
+		//printf("\n");
+		//printf("\n");
         
     }
 
 	
 	/***** DEALLOCATE UNUSED ARRAYS *****/
-	for(int i = 0;i<HASH_TABLE_SIZE;i++)
-	{
-		hash_list[i].Destroy();
-	}
+	//for(int i = 0;i<HASH_TABLE_SIZE;i++)
+	//{
+	//	hash_list[i].Destroy();
+	//}
 
-	delete[] hash_list;
+	//delete[] hash_list;
 
     printf("Ended Feature Construction\n");
     

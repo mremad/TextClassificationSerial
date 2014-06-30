@@ -75,7 +75,7 @@ void FileReader::deallocate()
 	}
 
 	delete[] data_list;
-	delete[] documents_size;
+	//delete[] documents_size;
 }
 //Read all the data set into data_list array
 void FileReader::read_files()

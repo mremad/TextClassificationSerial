@@ -22,9 +22,9 @@ class FeatureConstructor
     bool	check_if_feature(string word);
     int		get_index_for_label(string label);
     void	convert_labels_integers(string ** data_list, int number_documents);
-	void	FeatureConstructor::extract_labels(string** data_list, int number_documents);
-	int		FeatureConstructor::get_document_index(int* documents_size, int doc_num);
-	void	FeatureConstructor::extract_documents_indexes(int* documents_size,int number_documents);
+	void	extract_labels(string** data_list, int number_documents);
+	int		get_document_index(int* documents_size, int doc_num);
+	void	extract_documents_indexes(int* documents_size,int number_documents);
 	
     public:
     FeatureConstructor();

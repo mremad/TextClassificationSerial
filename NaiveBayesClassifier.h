@@ -8,19 +8,16 @@
 
 class NaiveBayesClassifier
 {
-	long double prob_document_label(int * feature_vector, int number_unique_words, int label);
-	long double prob_document_all_labels(int * feature_vector, int number_unique_words, int number_labels);
+	long double prob_document_label(int * feature_vector, int fv_size, int number_unique_words, int label);
 
-
-	
 	#ifdef CUDA_EMAD
 
 	#else
-	int calculate_single_word_label_occurence(int ** feature_vectors, int word_index, int number_documents, int label);
-	int calculate_all_words_label_occurence(int ** feature_vectors, int number_unique_words, int number_documents, int label);
+	int calculate_single_word_label_occurence(int * feature_vectors, int * documents_size, int * documents_indexes, int * docs_labels, int word_index, int number_documents, int label);
+	int calculate_all_words_label_occurence(int * feature_vectors, int * documents_size, int * documents_indexes, int * docs_labels, int number_unique_words, int number_documents, int label);
 	#endif
 
-	int calculate_label_occurance(int ** feature_vectors, int number_documents, int label);
+	int calculate_label_occurance(int * documents_labels, int number_documents, int label);
 
     //First Bayes parameter, the prob. of each word per label. Size NxC
     long double ** first_parameter;
@@ -30,11 +27,11 @@ class NaiveBayesClassifier
 	public:
 		NaiveBayesClassifier(int number_labels,int number_unique_words);
 
-        long double ** get_likelihood();
-        long double *  get_prior();
-		void calculate_likelihood(int** feature_vectors,int number_unique_words, int number_documents, int number_labels);
-		void calculate_prior(int** feature_vectors, int number_documents, int number_labels);
-		int classify_unlabeled_document(int * unlabeled_feature_vector, int number_unique_words, int number_labels);
+        long double **	get_likelihood();
+        long double *	get_prior();
+		void			calculate_likelihood(int * feature_vectors, int * documents_size, int * documents_indexes, int * docs_labels, int number_unique_words, int number_documents, int number_labels);
+		void			calculate_prior(int* documents_labels, int number_documents, int number_labels);
+		int				classify_unlabeled_document(int * unlabeled_feature_vector, int fv_size, int number_unique_words, int number_labels);
 };
 
 #endif

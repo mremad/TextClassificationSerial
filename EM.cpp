@@ -9,8 +9,8 @@ void EM::classify_all_unlabeled_documents(NaiveBayesClassifier* classifier, int*
 {
     for(int i = 0;i < number_documents;i++)
     {
-        int label = classifier->classify_unlabeled_document(feature_vectors[i], number_unique_words, number_labels);
-        feature_vectors[i][0] = label;
+        //int label = classifier->classify_unlabeled_document(feature_vectors[i], number_unique_words, number_labels);
+        //feature_vectors[i][0] = label;
     }
 }
 
@@ -68,9 +68,9 @@ void EM::run_em(NaiveBayesClassifier* classifier, int** feature_vectors, int** l
 	/*Initial Step*/
 	//Construct classifier with labeled feature_vectors
     
-    classifier->calculate_likelihood(labeled_docs, number_unique_words, number_labeled_documents, number_labels);
+    //classifier->calculate_likelihood(labeled_docs, number_unique_words, number_labeled_documents, number_labels);
 
-    classifier->calculate_prior(labeled_docs, number_labeled_documents, number_labels);
+    //classifier->calculate_prior(labeled_docs, number_labeled_documents, number_labels);
     
 	for(;;)
 	{
@@ -89,9 +89,9 @@ void EM::run_em(NaiveBayesClassifier* classifier, int** feature_vectors, int** l
         printf("Performing M Step\n");
         copy_parameters(classifier->get_likelihood(), classifier->get_prior(), old_likelihood, old_prior, number_labels, number_unique_words);
         
-		classifier->calculate_likelihood(feature_vectors, number_unique_words, number_labeled_documents+number_unlabeled_documents, number_labels);
+		//classifier->calculate_likelihood(feature_vectors, number_unique_words, number_labeled_documents+number_unlabeled_documents, number_labels);
 
-		classifier->calculate_prior(feature_vectors,number_labeled_documents+number_unlabeled_documents,number_labels);
+		//classifier->calculate_prior(feature_vectors,number_labeled_documents+number_unlabeled_documents,number_labels);
 
 		/*Check for convergence*/
         
