@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 	int document_size = 11290; // max 11290
     int desired_labeled = 5500; // max 5500
     int num_labels = 20;
+	int desired_unlabeled=40;//must be a multiple of num_labels
     
     int test_documents = 7500;
 
@@ -27,6 +28,7 @@ int main(int argc, char* argv[])
 	FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
     fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
     fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
+
     
 	fr.deallocate();
     //LabelFactory lf = LabelFactory();
