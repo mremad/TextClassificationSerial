@@ -25,10 +25,11 @@ int main(int argc, char* argv[])
     fr.read_files();
 	string** dataU;
 	string** dataL;
-	dataU = (string**) malloc(sizeof(string*));
-	dataL = (string**) malloc(sizeof(string*));
+	dataU = (string**) malloc(sizeof(string*)*desired_labeled);
+	dataL = (string**) malloc(sizeof(string*)*desired_unlabeled);
 	
     fr.label_factory(desired_labeled, desired_unlabeled, num_labels,dataU,dataL);
+	
 	FeatureConstructor fc = FeatureConstructor(fr.documents_size_unlabeled,desired_unlabeled);
     fc.extract_vocab(dataU, fr.documents_size_unlabeled, desired_unlabeled);
     fc.construct_feature_vectors(dataU, fr.documents_size_unlabeled, desired_unlabeled);
