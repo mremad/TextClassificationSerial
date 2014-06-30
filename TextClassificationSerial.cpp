@@ -23,11 +23,11 @@ int main(int argc, char* argv[])
 
 	FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
     fr.read_files();
-    //fr.read_files_per_label(desired_labeled/num_labels, num_labels);
+    fr.read_files_per_label(desired_labeled/num_labels, num_labels);
     
-	FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
-    fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
-    fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
+	FeatureConstructor fc = FeatureConstructor(fr.documents_size,desired_labeled);
+    fc.extract_vocab(fr.data_list, fr.documents_size, desired_labeled);
+    fc.construct_feature_vectors(fr.data_list, fr.documents_size, desired_labeled);
 
     
 	fr.deallocate();
@@ -37,10 +37,10 @@ int main(int argc, char* argv[])
 	NaiveBayesClassifier nc = NaiveBayesClassifier(fc.num_labels,fc.num_unique_words);
     
 	start_time = clock();
-	nc.calculate_likelihood(fc.feature_vector, fc.documents_size, fc.documents_indexes, fc.documents_labels, fc.num_unique_words, document_size, fc.num_labels);
+	nc.calculate_likelihood(fc.feature_vector, fc.documents_size, fc.documents_indexes, fc.documents_labels, fc.num_unique_words, desired_labeled, fc.num_labels);
 	end_time = clock();
 	printf("Time to calculate: %f\n",((end_time - start_time)/(float)CLOCKS_PER_SEC));
-	nc.calculate_prior(fc.documents_labels, document_size, fc.num_labels);
+	nc.calculate_prior(fc.documents_labels, desired_labeled, fc.num_labels);
     
 	//ConsolePrint::print_2d_float(fc.num_unique_words, 1, nc.get_likelihood());
     

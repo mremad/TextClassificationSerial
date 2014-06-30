@@ -15,3 +15,9 @@
 #define MAX_NUM_LABELS 20
 
 #define CUDA
+
+#ifdef CUDA
+#define D_QUALIFIER __device__
+#else
+#define D_QUALIFIER
+#endif

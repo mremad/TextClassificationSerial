@@ -36,11 +36,9 @@ void TestResults::extract_feature_vector()
 void TestResults::classify_documents()
 {
     printf("Classifying Test Data...\n");
-	for(int i=0;i<number_documents;i++)
-	{
-		result[i]=classifier->classify_unlabeled_document((feature_vector + feature_constructor->documents_indexes[i]),documents_size[i] ,feature_constructor->num_unique_words,feature_constructor->num_labels);
-        //printf("%d ",result[i]);
-	}
+
+	classifier->classify_unlabeled_documents(feature_vector,documents_size,feature_constructor->documents_indexes,number_documents,feature_constructor->num_unique_words,feature_constructor->num_labels,result);
+
     printf("Done Classifying Test Data\n");
     //printf("\n");
 }
