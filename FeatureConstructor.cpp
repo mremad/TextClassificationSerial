@@ -24,6 +24,9 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
     num_unique_words=0;
 	documents_size = document_size;
 
+	int totalSize=calculate_table_size(document_size, number_documents);
+    
+    vocab_list= new string[totalSize];
     label_list= new string[MAX_NUM_LABELS];
     hash_list= new LinkedList[HASH_TABLE_SIZE];
     max_List_Size=0;
@@ -144,7 +147,8 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             {
                 // append word to the list
                 hash_list[hashIndex].Append((data_list[i][j]),num_unique_words);
-
+				// update the vocablist
+				vocab_list[num_unique_words]=data_list[i][j];
 				//printf("%s ",data_list[i][j]);
                 num_unique_words++;
             }
