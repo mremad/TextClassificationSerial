@@ -44,8 +44,8 @@ int main(int argc, char* argv[])
     
 	//ConsolePrint::print_2d_float(fc.num_unique_words, 1, nc.get_likelihood());
     
-    /*EM em = EM();
-    em.run_em(&nc, fc.feature_vector , lf.labeled_fv, lf.unlabeled_fv, fc.NUM_OF_UNIQUE_WORDS, fc.NUM_OF_DOCUMENTS-desired_labeled, desired_labeled, fc.NUM_OF_LABELS);*/
+    //EM em = EM();
+	//em.run_em(&nc, &fc , labeled_fv, unlabeled_fv,  desired_labeled, desired_unlabeled);
     
     TestResults tr = TestResults(TEST_PATH_SHAABAN, test_documents, &fc, &nc);
     tr.start_test();

@@ -14,10 +14,10 @@
 
 #define MAX_NUM_LABELS 20
 
-#define CUDA
+#define CUDA_LIKELIHOOD
+#define CUDA_CLASSIFY
 
-#ifdef CUDA
-#define D_QUALIFIER __device__
-#else
-#define D_QUALIFIER
-#endif
+#define CLASSIFY_THREADS_X		1024
+#define CLASSIFY_THREADS_Y		1
+
+#define LIKELIHOOD_THREADS_X	32

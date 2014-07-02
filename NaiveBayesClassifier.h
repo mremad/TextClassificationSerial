@@ -5,19 +5,21 @@
 #include "stdio.h"
 #include "math.h"
 #include "Cfg.h"
+#include "CudaStd.h"
 
 class NaiveBayesClassifier
 {
 	
 
-	#ifndef CUDA
+	#ifndef CUDA_LIKELIHOOD
 	int calculate_single_word_label_occurence(int * feature_vectors, int * documents_size, int * documents_indexes, int * docs_labels, int word_index, int number_documents, int label);
 	int calculate_all_words_label_occurence(int * feature_vectors, int * documents_size, int * documents_indexes, int * docs_labels, int number_unique_words, int number_documents, int label);
-	
 	#endif
+
 	#ifndef CUDA_CLASSIFY
 	long double prob_document_label(int * feature_vector, int fv_size, int number_unique_words, int label);
 	#endif
+
 	int calculate_label_occurance(int * documents_labels, int number_documents, int label);
 
     //First Bayes parameter, the prob. of each word per label. Size NxC
