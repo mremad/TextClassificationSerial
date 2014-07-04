@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     int start_time;
 	int end_time;
 	int document_size = 11290; // max 11290
-    int desired_labeled = 5500; // max 5500
+    int desired_labeled = 1000; // max 5500
     int num_labels = 20;
 	int desired_unlabeled=40;//must be a multiple of num_labels
     
@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
     fr.read_files();
     fr.read_files_per_label(desired_labeled/num_labels, num_labels);
-    
+
 	FeatureConstructor fc = FeatureConstructor(fr.documents_size,desired_labeled);
     fc.extract_vocab(fr.data_list, fr.documents_size, desired_labeled);
     fc.construct_feature_vectors(fr.data_list, fr.documents_size, desired_labeled);
@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
     
 	fr.deallocate();
     //LabelFactory lf = LabelFactory();
-    //lf.select_labeled_docs(fc.feature_vector, fc.NUM_OF_DOCUMENTS, desired_labeled, fc.NUM_OF_LABELS);
+	//lf.select_labeled_docs(fc.documents_labels,document_size,desired_labeled,fc.num_labels);
     
 	NaiveBayesClassifier nc = NaiveBayesClassifier(fc.num_labels,fc.num_unique_words);
     
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 	//ConsolePrint::print_2d_float(fc.num_unique_words, 1, nc.get_likelihood());
     
     //EM em = EM();
-	//em.run_em(&nc, &fc , labeled_fv, unlabeled_fv,  desired_labeled, desired_unlabeled);
+	//em.run_em(&nc,fc.feature_vector,fc.documents_size,fc.documents_indexes,fc.documents_labels,lf.labeled_fv,lf.unlabeled_fv,fc.num_unique_words,document_size-desired_labeled,desired_labeled,fc.num_labels);
     
     TestResults tr = TestResults(TEST_PATH_SHAABAN, test_documents, &fc, &nc);
     tr.start_test();

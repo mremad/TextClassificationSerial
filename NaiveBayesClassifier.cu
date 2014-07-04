@@ -110,6 +110,13 @@ void NaiveBayesClassifier::calculate_likelihood(int * feature_vectors, int * doc
 	first_parameter = CudaStd::convert_1d_to_2d_float(h_fp,number_labels,number_unique_words);
 
 	free(h_fp);
+
+	cudaFree(d_fv);
+	cudaFree(d_doc_label);
+	cudaFree(d_doc_size);
+	cudaFree(d_doc_ind);
+	cudaFree(d_fp);
+	cudaFree(d_occurences);
 }
 
 #else
@@ -305,6 +312,14 @@ void NaiveBayesClassifier::classify_unlabeled_documents(int* feature_vectors, in
 	cudaMemcpy(labels,d_labels,num_documents*sizeof(int),cudaMemcpyDeviceToHost);
 
 	free(h_fp);
+
+	cudaFree(d_fv);
+	cudaFree(d_docs_sizes);
+	cudaFree(d_docs_indexes);
+	cudaFree(d_labels);
+	cudaFree(d_fp);
+	cudaFree(d_sp);
+
 #endif
 }
 
