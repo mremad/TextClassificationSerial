@@ -52,11 +52,36 @@ long double* CudaStd::convert_2d_to_1d_float(long double** src, int rows, int co
 	return dest;
 }
 
-string* CudaStd::convert_2d_to_1d_string(string** src, int rows, int cols)
+string* CudaStd::convert_2d_to_1d_string(string** src, int rows, int* cols, int dst_size)
 {
-	string* dst = new string[rows*cols];
+	string* dst = new string[dst_size];
+	int index=0;
+	//returns a 1D array of strings
+	for(int i=0;i<rows;i++)
+		for(int j=0;j<cols[i];j++)
+		{
+			dst[index]=src[i][j];
+			index++;
+		}
 
-	//TODO: returns a 1D array of strings
+	return dst;
+}
+
+char* CudaStd::convert_string_arr_to_char_arr(string* src, int num_strings, int dst_size,int* indexes_string_start)
+{
+	char* dst = (char*)malloc(sizeof(char)*dst_size);
+	int index=0;
+	//returns a 1D array of strings
+	for(int i=0;i<num_strings;i++)
+		{
+			indexes_string_start[i]=index;
+			
+			for(int j=0;j<src[i].length();j++)
+			{
+				dst[index+j]= src[i].at(j);
+			}
+			index+=src[i].length();
+		}
 
 	return dst;
 }

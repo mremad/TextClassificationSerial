@@ -1,5 +1,6 @@
 #include "FileReader.h"
 using namespace std;
+const int FIXED_STRING_SIZE=25;
 FileReader::FileReader(int docs_to_read, string document_path)
 {
 	ConsolePrint::print_string("File Reader initialized\n");
@@ -9,25 +10,55 @@ FileReader::FileReader(int docs_to_read, string document_path)
 	documents_size= new int[num_docs];
 }
 
-//Read the content of the document in document_path into the array document_words
-void FileReader::read_single_file(string line, string* document_words)
+
+bool FileReader::check_if_feature(string word)
 {
+    bool check = true;
+    
+    if(word.length() <= 3)
+    {
+        check = false;
+    }
+    else if(word == "though" || word == "they" || word == "that" || word == "this" || word == "there" || word == "were"
+            || word == "than" || word == "rather" || word == "from" || word == "most")
+        check = false;
+    
+    return check;
+}
+
+//Read the content of the document in document_path into the array document_words
+void FileReader::read_single_file(string line, string* document_words,int word_count)
+{
+	bool label_string=true;
 	int index_in_doc=0;//index for the word in the document array
 	document_words[index_in_doc]="";//initialize the string to append the word to it
 	for(int k=0;k<line.size();k++)
 	{
-		if((line[k]==' '|| line[k]==9) && k<line.size()-1)//word ended initialize new string and increase indexInDoc
+		if((line[k]==' '|| line[k]==9) && k<line.size()-1 
+			&& (label_string 
+			|| check_if_feature(document_words[index_in_doc])))//word ended initialize new string and increase indexInDoc
 		{
+			label_string=false;
 			index_in_doc++;
-			document_words[index_in_doc]="";
+			if(index_in_doc<word_count)
+			{
+				document_words[index_in_doc]="";
+			}
+			else
+				break;
 		}
 		else
-		if(line[k]!=' ' || line[k]!=9)
+		if(line[k]!=' ' && line[k]!=9)
 		{
 			document_words[index_in_doc].append(line,k,1);
 		}
-		
+		else
+		if((line[k]==' '|| line[k]==9) && !check_if_feature(document_words[index_in_doc]))
+			{
+				document_words[index_in_doc]="";
+			}
 	}
+	
 }
 
 
@@ -130,23 +161,46 @@ void FileReader::read_files()
 	if (myfile.is_open())
 	{
 		int i=0;
+		int word_count=0;
+		int curr_string_length=0;
+		bool label_string=true;
+		total_char_count=0;
+		total_word_count=0;
 		while ( getline (myfile,line)&&i<num_docs)
-		{
-			int word_count=0;
+		{	
+		
+			word_count=0;
+			curr_string_length=0;
+			label_string=true;
+			string curr_word="";
 			for(int j=0;j<line.size();j++)//count words in the document(line)
 			{
 				if(line[j]==' '|| line[j]==9)
 				{
-					word_count++;
+					if(label_string || check_if_feature(curr_word))
+					   {
+						   label_string=false;
+						   word_count++;
+						   total_char_count+=curr_string_length;
+					   }
+						curr_word="";
+						curr_string_length=-1;
 				}
+				if(curr_string_length!=-1)
+					curr_word.append(line,j,1);
+				curr_string_length++;
 			}
 			if(line[line.size()-1]!=' ')//in case the document didn't end with a space 
-			{							//count for the last word
-				word_count++;
+			{
+			   if(check_if_feature(curr_word))	//count for the last word
+				{
+					word_count++;
+					total_char_count+=curr_string_length;
+			   }
 			}
 			data_list[i]=new string[word_count];//allocate array for each document(line)
-			
-			read_single_file(line,data_list[i]);
+			total_word_count+=word_count;
+			read_single_file(line,data_list[i],word_count);
 			documents_size[processed_docs]=word_count;
 			processed_docs++;
 			i++;

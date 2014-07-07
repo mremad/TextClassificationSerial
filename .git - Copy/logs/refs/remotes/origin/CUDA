@@ -1,0 +1,4 @@
+1bb26055b6d6458148e22018d5a9b439f0d2e2b5 4709038173119a30aae847bae5e46cfba1b9795e unknown <M@MM-PC.(none)> 1404058239 +0200	pull --progress --rebase --prune origin CUDA: fast-forward
+4709038173119a30aae847bae5e46cfba1b9795e 940957d1e60d48f8fc12265168507d8c109a5b5e unknown <M@MM-PC.(none)> 1404146862 +0200	fetch origin +refs/pull/*/head:refs/remotes/origin/pr/* +refs/heads/*:refs/remotes/origin/* --prune: fast-forward
+940957d1e60d48f8fc12265168507d8c109a5b5e b1dc2ac72963ae316a3fc73fb222b744b003fe12 unknown <M@MM-PC.(none)> 1404224730 +0200	fetch origin +refs/pull/*/head:refs/remotes/origin/pr/* +refs/heads/*:refs/remotes/origin/* --prune: fast-forward
+b1dc2ac72963ae316a3fc73fb222b744b003fe12 57cd88d3c896cc6cbb4bb4b9b2f1c1bdd973b2d9 unknown <M@MM-PC.(none)> 1404467428 +0200	pull --progress --rebase --prune origin CUDA: fast-forward
