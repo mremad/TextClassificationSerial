@@ -7,9 +7,13 @@ class EM
 {
     void classify_all_unlabeled_documents(NaiveBayesClassifier* classifier, int* feature_vectors,int* docs_sizes, int* docs_ind, int number_unique_words, int number_documents, int number_labels, int* result);
     void copy_parameters(long double** src_likelihood, long double* src_prior, long double** dest_likelihood, long double* dest_prior, int number_labels, int number_unique_words);
+	void copy_labels(int* new_labels, int* old_labels, int num_labels);
     bool check_if_converged(long double** old_likelihood, long double* old_prior, long double** new_likelihood, long double* new_prior, int number_labels, int number_unique_words);
 	void build_seperate_fv(int* fv, int* docs_sizes, int* docs_ind, int* docs_labels, int* labeled_docs, int* unlabeled_docs, int num_labeled, int num_unlabeled);
 	int	 calculate_size_feature_vector(int* docs_ind,int* docs_sizes, int num_docs);
+	void initialize_weights(int num_labeled_docs, int num_unlabeled_docs, int num_labels);
+	void estimate_weights(int* old_labels, int* new_labels, int num_docs);
+	void update_total_weights(int num_unlabeled_docs, int num_labels);
 
 	int* labeled_fv;
 	int* unlabeled_fv;
@@ -26,6 +30,9 @@ class EM
 
 	int* labeled_docs;
 	int* unlabeled_docs;
+
+	long double* weights;
+	long double* weights_unlabeled;
 
 	public:
 		EM();

@@ -37,7 +37,7 @@ void TestResults::classify_documents()
 {
     printf("Classifying Test Data...\n");
 
-	classifier->classify_unlabeled_documents(feature_vector,documents_size,feature_constructor->documents_indexes,number_documents,feature_constructor->num_unique_words,feature_constructor->num_labels,result);
+	classifier->classify_unlabeled_documents(feature_vector,documents_size,feature_constructor->documents_indexes,number_documents,feature_constructor->num_unique_words,feature_constructor->num_labels,result,0);
 
     printf("Done Classifying Test Data\n");
     //printf("\n");
