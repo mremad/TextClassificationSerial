@@ -57,7 +57,6 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
     num_labels=0;
 	num_unique_words=0;
 	documents_size = document_size;
-	total_word_count=calculate_table_size(document_size,number_documents);
 	vocab_list= new string[total_word_count];
     label_list= new string[MAX_NUM_LABELS];
     hash_list= new LinkedList[HASH_TABLE_SIZE];
@@ -636,12 +635,11 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 	int startIndex, wordLength, hashValue;
 	bool wordFound=false;
 
-	
-	
-		// get the start index of the current word
+	// get the start index of the current word
 	startIndex=d_data.d_indexes_string_start[threadId];
 	word= &d_data.d_charDataList[startIndex];
-		//check if the current word is not the last word
+
+	//check if the current word is not the last word
 	if((threadId+1)< d_data.total_word_count)
 	{
 		// get the word length = start of next word - start of current word
@@ -657,10 +655,11 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 	// get the hash value of the current word
 	hashValue= hash_inc(word,wordLength,(uint32_t) wordLength);
 	
-	//int oldNumOfWords1=  atomic_add(&d_data.d_words_per_hash_row[hashValue],1);
-
+	// Loop in the words in the hash table row with same hash value 
+	// to see if word exists or not
 	for(int j=0;j< d_data.d_words_per_hash_row[hashValue];j++)
-	{
+	{	
+		// calculate the start of the word in hash table
 		int wordStartinHashTable=hashValue*d_data.hash_row_size*d_data.hash_word_size+ j*d_data.hash_word_size; 
 		if(compare(&d_data.d_charDataList[startIndex],&d_data.d_HashArray[wordStartinHashTable], wordLength))
 		{
@@ -669,22 +668,19 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 		}
 	}
 
-	
-	//int oldNumOfWords1=  atomic_add(&d_data.d_words_per_hash_row[hashValue],1);
 	if(!wordFound)
 	{
 		// update the number of words in this hash row
 		int oldNumOfWords=  atomic_add(&d_data.d_words_per_hash_row[hashValue],1);
 		// caluclat the  new index where the word will be written into 
 		int hashArrayIndex=hashValue*d_data.hash_row_size*d_data.hash_word_size+ oldNumOfWords*d_data.hash_word_size;
-		//int hashArrayIndex=0;
+		
 		// copy data from data list to hash value
 		for(int k=0;k<wordLength;k++)
 		{
 			d_data.d_HashArray[hashArrayIndex+k]= d_data.d_charDataList[startIndex+k];
 		}
 		d_data.d_HashArray[hashArrayIndex+wordLength]='&';
-		//cudaMemcpy(&d_data.d_HashArray[hashArrayIndex],&d_data.d_charDataList[startIndex],wordLength*sizeof(char),cudaMemcpyDeviceToDevice);
 	}
 
 
@@ -692,46 +688,48 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 
 }
 
+
 void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents, int total_word_count, int total_char_count)
 {
-
      //loop over all documents and extract all labels
-	
     printf("Began Labels Extraction\n");
-
 	extract_labels(data_list,number_documents);
-	
     printf("End of  Labels Extraction\n");
 
     printf("Began Vocab Extraction\n");
 
-	   //convert the datalist to char list and extract both indexes
-    //convert 2D array to 1D array of strings
-	string* h_dl = CudaStd::convert_2d_to_1d_string(data_list, number_documents,documents_size,total_word_count);
-	// get start index of each word
-    int* indexes_string_start_data=(int*)malloc(sizeof(int)*total_word_count);//indexes for the start and length of chars
-    //convert 1D array of strings to 1D array of chars
-	char* h_charDataList = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
+	// initialize variables
+	int* indexes_string_start_data;
+	char* h_charDataList;
+	string* h_dl;
+	char *d_hash_array, *d_charDataList;
+	int *d_words_per_hash_row, *d_indexes_string_start_data  ;
 
+    //convert 2D array to 1D array of strings
+	 h_dl = CudaStd::convert_2d_to_1d_string(data_list, number_documents,documents_size,total_word_count);
+	// get start index of each word
+     indexes_string_start_data=(int*)malloc(sizeof(int)*total_word_count);//indexes for the start and length of chars
+    //convert 1D array of strings to 1D array of chars
+	 h_charDataList = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
+
+	 //Allocate memory to arrays on the host
+	 // size of h_hash_array= (number of rows in hash table)* (each row size)* (size of each word) 
 	h_hash_array=(char*) malloc(sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
 	h_words_per_hash_row= (int*)malloc(sizeof(int)*HASH_TABLE_SIZE);
+
+	// initialize h_words_per_hash_row with zeros
 	for(int i=0;i<HASH_TABLE_SIZE;i++)
 	{
 		h_words_per_hash_row[i]=0;
 	}
 	
-
-
-	char *d_hash_array, *d_charDataList;
-	int *d_words_per_hash_row, *d_indexes_string_start_data  ;
-	
-	//allocate memory of th char data list
+	//allocate memory on the device
 	cudaMalloc((void**)&d_charDataList,sizeof(char)*total_char_count);
 	cudaMalloc((void**)&d_indexes_string_start_data,sizeof(int)*total_word_count);
 	cudaMalloc((void**)&d_hash_array,sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
 	cudaMalloc((void**)&d_words_per_hash_row,sizeof(int)*HASH_TABLE_SIZE);
 
-	
+	// copy data from device to host
 	cudaMemcpy(d_charDataList,h_charDataList,total_char_count*sizeof(char),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_indexes_string_start_data,indexes_string_start_data,total_word_count*sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_words_per_hash_row,h_words_per_hash_row,HASH_TABLE_SIZE*sizeof(int),cudaMemcpyHostToDevice);
@@ -745,6 +743,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
 	dim3 blocks(BLOCKS_X,BLOCKS_Y);
 	dim3 threads(THREADS_X,THREADS_Y);
 
+	// use the dataCollectin struct to pass arguments to the kernel
 	dataCollection d_data;
 	d_data.d_charDataList= d_charDataList;
 	d_data.d_indexes_string_start= d_indexes_string_start_data;
@@ -756,27 +755,30 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
 	d_data.hash_row_size= HASH_ROW_SIZE;
 	d_data.hash_word_size= HASH_WORD_SIZE;
 
+	// run the kernel 
 	extract_vocab_kernel<<<blocks,threads>>>(d_data);
+
+	// copy the data back from device to host
 	cudaMemcpy(h_hash_array,d_hash_array,HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE*sizeof(char),cudaMemcpyDeviceToHost);
 	cudaMemcpy(h_words_per_hash_row,d_words_per_hash_row,sizeof(int)*HASH_TABLE_SIZE,cudaMemcpyDeviceToHost);
  
+	// calculate numver of unique words 
 	for(int i=0;i<HASH_TABLE_SIZE;i++)
 	{
 		num_unique_words+= h_words_per_hash_row[i];
 	}
 
+	// Free memory on the device
 	cudaFree(d_data.d_charDataList);
 	cudaFree(d_data.d_HashArray);
 	cudaFree(d_data.d_indexes_string_start);
 	cudaFree(d_data.d_words_per_hash_row);
 
+	// free memory on the host
 	free(h_charDataList);
-	//free(h_words_per_hash_row);
-	//free(h_hash_array);
 	free(indexes_string_start_data);
 	//delete(h_dl);
 
     printf("End of Vocab Extraction\n");
 
-	//return d_data;
 }
