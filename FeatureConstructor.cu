@@ -28,14 +28,19 @@ FeatureConstructor::FeatureConstructor()
     
 }
 
-FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
+void FeatureConstructor::process_data_list(string** data_list,int* documents_size, int number_documents)
 {
-	
-    label_list= new string[MAX_NUM_LABELS];
-    num_labels=0;
-	num_unique_words=0;
+	total_char_count=0;
+	total_word_count=0;
+	for(int i=0;i<number_documents;i++)
+	{
+		total_word_count+=documents_size[i];
+		for(int j=0;j<documents_size[i];j++)
+		{
+			total_char_count+=data_list[i][j].length();
+		}
+	}
 }
-
 
 int calculate_table_size(int* documents_size, int number_documents)
 {
@@ -44,6 +49,28 @@ int calculate_table_size(int* documents_size, int number_documents)
         result+=documents_size[i];
     return  result;
 }
+
+FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
+{
+	
+    label_list= new string[MAX_NUM_LABELS];
+    num_labels=0;
+	num_unique_words=0;
+	documents_size = document_size;
+	total_word_count=calculate_table_size(document_size,number_documents);
+	vocab_list= new string[total_word_count];
+    label_list= new string[MAX_NUM_LABELS];
+    hash_list= new LinkedList[HASH_TABLE_SIZE];
+    max_List_Size=0;
+	for(int i=0;i<HASH_TABLE_SIZE;i++)
+    {
+        hash_list[i]= *new LinkedList();
+    }
+
+}
+
+
+
 
 FeatureConstructor::FeatureConstructor(int* document_size, int number_documents,int total_characters_count,int total_words_count)
 {
@@ -328,7 +355,6 @@ __device__ uint32_t hash_inc(const char * data, int len, uint32_t hash)
     
 	return hash% HASH_TABLE_SIZE;
 } 
-
 __device__ int compare(char* a, char* b, int length_a)
 {
   for(int i=0;i<length_a;i++)
@@ -341,6 +367,261 @@ __device__ int compare(char* a, char* b, int length_a)
 	  else
 	  return 0;
 }
+//***********************TEMP TO BE REMOVED********************
+struct  data_collection{
+  char* char_data_list;
+  int*  data_start_indexes;
+  char* hash_array; 
+  int*  words_per_hash_row;
+  int total_word_count;
+  int total_char_count;
+  int hash_table_size;
+  int hash_row_size;
+  int hash_word_size;
+
+} ;
+//******************************************************************
+//*************************SHAABAN CODE******************************
+__global__ void construct_feature_vector_kernel (int* d_fv, data_collection d_data, char* vocab_list)
+{
+	int threadId = threadIdx.x + blockIdx.x*blockDim.x;
+	
+	
+	int my_word_start=d_data.data_start_indexes[threadId];
+	//char* my_word=&d_data.char_data_list [my_word_start];
+	int my_word_length;
+	if(threadId+1<d_data.total_word_count)
+		 my_word_length=d_data.data_start_indexes[threadId+1]-d_data.data_start_indexes[threadId];
+	else
+		 my_word_length=d_data.total_char_count-d_data.data_start_indexes[threadId];
+
+	int index_list=hash_inc(&d_data.char_data_list [my_word_start],my_word_length,(uint32_t) my_word_length);
+	int vocab_list_index=index_list*d_data.hash_row_size*d_data.hash_word_size;
+	int vocab_list_length=d_data.words_per_hash_row[index_list]*d_data.hash_word_size;
+	//if(threadId<600)
+		//d_fv[threadId]=vocab_list_index;
+	//if(threadId==0)
+	//	{
+		//	d_fv[threadId]=my_word_start;
+		//	d_fv[threadId+1]=my_word_length;
+		//	for(int j=0;j<500;j++)
+			// {
+		//		 vocab_list[j]=d_data.hash_array[vocab_list_index+j];
+/////
+		//	}
+	//	}
+
+	//d_fv[2]=3;
+	for(int i=vocab_list_index;(i<vocab_list_length+vocab_list_index) && (my_word_start+my_word_length < d_data.total_char_count );i+=d_data.hash_word_size)
+	{
+		//char* vocab=&d_data.hash_array[i];
+		//if(threadId<600)
+			//d_fv[threadId]=compare(my_word,vocab,my_word_length);
+		//d_fv[threadId]=i;
+		if(compare(&d_data.char_data_list [my_word_start],&d_data.hash_array[i],my_word_length)==1)
+		{
+			d_fv[threadId]=i;
+			break;
+		}
+	}
+	
+}
+
+#ifdef CUDA_FEATURE_VECTOR
+void FeatureConstructor::construct_feature_vectors(string** data_list,int* documents_size, int number_documents,int total_char_count,int total_word_count)
+{
+    printf("Began Feature Construction\n");
+    int hashIndex, position;
+	//int totalSize = calculate_table_size(documents_size,number_documents);
+
+    // set the number of rows to be equal number of documents
+    feature_vector =  (int*)malloc(sizeof(int)*total_word_count);
+    documents_labels = (int*)malloc(sizeof(int)*number_documents);
+
+    convert_labels_integers(data_list, number_documents);
+	extract_documents_indexes(documents_size, number_documents);
+    
+    // loop on every row and set number of columns to be equal of number of unique words
+    for(int i=0;i<total_word_count;i++)
+    {
+		feature_vector[i]=-1;
+    }
+	const int THREADS_Y = 1;
+	const int THREADS_X = 512;
+	const int BLOCKS_X = ceil(total_word_count/(float)THREADS_X);
+	const int BLOCKS_Y = 1;
+
+	dim3 blocks(BLOCKS_X,BLOCKS_Y);
+	dim3 threads(THREADS_X,THREADS_Y);
+
+	int*  d_fv; //holding results
+	char* d_cl;
+	int* d_cl_index_start;
+	char* d_vl;
+	int* words_per_row;
+
+
+	//******TEMP FOR VOCAB COMPUTATION
+	/*int vocab_list_total_char_count=0;
+	for(int i=0;i<num_unique_words;i++)
+	{
+		vocab_list_total_char_count+= vocab_list[i].length();
+	}
+	char* vocab_temp_list= (char*)malloc(sizeof(char)*num_unique_words*100);
+	int* vocab_words_per_row_temp=(int*)malloc(sizeof(int)*2000);
+	for(int i=0;i<num_unique_words;i++)
+	{
+		for(int j=0;j<vocab_list[i].length();j++)
+			vocab_temp_list[(i*100)+j]=vocab_list[i].at(j);
+		vocab_temp_list[(i*100)+vocab_list[i].length()]='&';
+	}
+	for(int i=0;i<2000;i++)
+	{
+		vocab_words_per_row_temp[i]=60;
+	}*/
+	//**************
+
+
+	//allocate feature vector, char list(data list->chars), vocab list->char,index for vocab list and data list
+	cudaMalloc((void**)&d_fv,total_word_count*sizeof(int));
+
+	cudaMalloc((void**)&d_cl,total_char_count*sizeof(char));
+	cudaMalloc((void**)&d_vl,HASH_ROW_SIZE*HASH_WORD_SIZE*HASH_TABLE_SIZE*sizeof(char));
+
+	cudaMalloc((void**)&words_per_row,HASH_TABLE_SIZE*sizeof(int));
+
+	cudaMalloc((void**)&d_cl_index_start,total_word_count*sizeof(int));
+
+
+
+	//convert the datalist to char list and extract both indexes
+	string* h_dl;//temp to hold the data into 1D string array
+	//convert 2D array to 1D array of strings
+	h_dl = CudaStd::convert_2d_to_1d_string(data_list, number_documents,documents_size,total_word_count);
+	int* indexes_string_start_data=(int*)malloc(sizeof(int)*total_word_count);//indexes for the start and length of chars
+	//int* indexes_string_length_data=(int*)malloc(sizeof(int)*total_word_count);
+	//convert 1D array of strings to 1D array of chars
+	char* h_cl = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
+//	indexes_string_start_data[0]=0;
+	//for(int i=1;i<total_word_count;i++)
+//	{
+	//	indexes_string_start_data[i]=h_dl[i].length()+indexes_string_start_data[i-1];
+	//}
+	//for(int i=0;i<500;i++)
+	//{
+	//	printf("%c",vocab_temp_list[i]);
+	//}
+	//for(int i=0;i<100;i++)
+	//{
+	//	printf("%d ",indexes_string_start_data[i]);
+//	}
+
+	
+	//processing the vocab list
+	//int* indexes_string_start_vocab=(int*)malloc(sizeof(int)*num_unique_words);//indexes for the start and length of chars
+	//int* indexes_string_length_vocab=(int*)malloc(sizeof(int)*num_unique_words);
+	//convert 1D array of strings to 1D array of chars
+	//char* h_vl = CudaStd::convert_string_arr_to_char_arr(vocab_list,num_unique_words,vocab_list_total_char_count,indexes_string_start_vocab);
+	
+
+	
+
+
+	//constants for the data structure
+	data_collection data;
+	data.char_data_list=d_cl;
+	data.data_start_indexes=d_cl_index_start;
+	data.hash_array=d_vl;
+	data.hash_row_size=HASH_ROW_SIZE;
+	data.hash_table_size=HASH_TABLE_SIZE;
+	data.hash_word_size=HASH_WORD_SIZE;
+	data.total_char_count=total_char_count;
+	data.total_word_count=total_word_count;
+	data.words_per_hash_row=words_per_row;
+	
+
+
+	//Add the last index in the indexes lists
+	//d_cl_index_start[total_word_count]=total_char_count;
+	//d_vl_index_start[num_unique_words]=vocab_list_total_char_count;
+
+	//copy Vocab list, vocab indexes, data indexes, char list
+	cudaMemcpy(d_cl,h_cl,total_char_count*sizeof(char),cudaMemcpyHostToDevice);
+
+	cudaMemcpy(d_vl,h_hash_array,HASH_ROW_SIZE*HASH_WORD_SIZE*HASH_TABLE_SIZE*sizeof(char),cudaMemcpyHostToDevice);
+
+	//copying indexes lists
+	cudaMemcpy(words_per_row,h_words_per_hash_row,HASH_TABLE_SIZE*sizeof(int),cudaMemcpyHostToDevice);
+
+	cudaMemcpy(d_cl_index_start,indexes_string_start_data,total_word_count*sizeof(int),cudaMemcpyHostToDevice);
+	char* myVocab;
+	char* host=(char*)malloc(sizeof(char)*500);
+	for(int i=0;i<500;i++)
+	{
+		host[i]='x';
+	}
+	cudaMalloc((void**)&myVocab,sizeof(char)*500);
+ 	construct_feature_vector_kernel<<<blocks,threads>>>(d_fv,data,myVocab);
+	if ( cudaSuccess != cudaGetLastError() )
+    printf( "Error!\n" );
+
+	cudaMemcpy(feature_vector,d_fv,total_word_count*sizeof(int),cudaMemcpyDeviceToHost);
+	cudaMemcpy(host,myVocab,sizeof(char)*500,cudaMemcpyDeviceToHost);
+	cudaFree(d_cl);
+	cudaFree(d_vl);
+	cudaFree(words_per_row);
+#ifndef CUDA_FEATURE_VECTOR
+    // loop over every document
+    for(int i=0;i<number_documents;i++)
+    {
+        for(int j=0;j<documents_size[i];j++)
+        {
+            // check if word can be used as feature word
+            if(!check_if_feature(data_list[i][j]))
+			{
+				position = -1;
+			}
+			else
+			{
+				// calculate index
+				hashIndex = SuperHash::create_hash(data_list[i][j], (int)data_list[i][j].length(),HASH_TABLE_SIZE);
+				// get the position of the word int he vocablist
+				position = hash_list[hashIndex].getPositionValue(data_list[i][j]);
+			}
+
+			feature_vector[documents_indexes[i] + j] = position;
+            
+			//printf("%i ",feature_vector[get_document_index(documents_size,i) + j]);
+        }
+		//printf("\n");
+		//printf("\n");
+        
+    }
+
+	
+	/***** DEALLOCATE UNUSED ARRAYS *****/
+	//for(int i = 0;i<HASH_TABLE_SIZE;i++)
+	//{
+	//	hash_list[i].Destroy();
+	//}
+
+	//delete[] hash_list;
+	#endif
+	for(int i=0;i<600;i++)
+	{
+		printf("%d ",feature_vector[i]);
+	}
+	/*for(int i=0;i<100;i++)
+	{
+		printf("%c",host[i]);
+	}*/
+    printf("Ended Feature Construction\n");
+    
+}
+#endif
+//*******************************************************************
+
+
 
 __device__ int atomic_add(int *address, int value)
 {
@@ -411,7 +692,7 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 
 }
 
-dataCollection FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents, int total_word_count, int total_char_count)
+void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents, int total_word_count, int total_char_count)
 {
 
      //loop over all documents and extract all labels
@@ -432,8 +713,8 @@ dataCollection FeatureConstructor::extract_vocab(string** data_list,int* documen
     //convert 1D array of strings to 1D array of chars
 	char* h_charDataList = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
 
-	char* h_hash_array=(char*) malloc(sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
-	int* h_words_per_hash_row= (int*)malloc(sizeof(int)*HASH_TABLE_SIZE);
+	h_hash_array=(char*) malloc(sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
+	h_words_per_hash_row= (int*)malloc(sizeof(int)*HASH_TABLE_SIZE);
 	for(int i=0;i<HASH_TABLE_SIZE;i++)
 	{
 		h_words_per_hash_row[i]=0;
@@ -476,7 +757,7 @@ dataCollection FeatureConstructor::extract_vocab(string** data_list,int* documen
 	d_data.hash_word_size= HASH_WORD_SIZE;
 
 	extract_vocab_kernel<<<blocks,threads>>>(d_data);
-	//cudaMemcpy(h_hash_array,d_hash_array,HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE*sizeof(char),cudaMemcpyDeviceToHost);
+	cudaMemcpy(h_hash_array,d_hash_array,HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE*sizeof(char),cudaMemcpyDeviceToHost);
 	cudaMemcpy(h_words_per_hash_row,d_words_per_hash_row,sizeof(int)*HASH_TABLE_SIZE,cudaMemcpyDeviceToHost);
  
 	for(int i=0;i<HASH_TABLE_SIZE;i++)
@@ -484,191 +765,18 @@ dataCollection FeatureConstructor::extract_vocab(string** data_list,int* documen
 		num_unique_words+= h_words_per_hash_row[i];
 	}
 
+	cudaFree(d_data.d_charDataList);
+	cudaFree(d_data.d_HashArray);
+	cudaFree(d_data.d_indexes_string_start);
+	cudaFree(d_data.d_words_per_hash_row);
+
 	free(h_charDataList);
-	free(h_words_per_hash_row);
-	free(h_hash_array);
+	//free(h_words_per_hash_row);
+	//free(h_hash_array);
 	free(indexes_string_start_data);
 	//delete(h_dl);
 
     printf("End of Vocab Extraction\n");
 
-	return d_data;
+	//return d_data;
 }
-
-
-
-#ifdef CUDA_FEATURE_VECTOR
-
-
-__device__ int calculate_hash(char* word, int length)
-{
-	return 0;
-}
-/*__device__ int check_feature(char* word)
-{
-	bool check = true;
-    if( compare(word,"though")==0 ||compare(word,"they")==0 || compare(word,"that")==0 || compare(word,"this")==0 || compare(word,"there")==0 || 
-            compare(word,"were")==0 || compare(word,"than")==0 || compare(word,"rather")==0 || compare(word,"from")==0 || compare(word,"most")==0 )
-        check = false;
-    
-    return check;
-}*/
-__global__ void construct_feature_vector_kernel(int* d_fv, char* d_dl, char* d_vl, int* start_index_data,int* d_table_indexes,int* start_index_vocab, int* d_positions)
-{
-	int threadId = threadIdx.x + blockIdx.x*blockDim.x;
-	int my_word_start=start_index_data[threadId];
-	char* my_word=&d_dl[my_word_start];
-	int my_word_length=start_index_data[threadId+1]-start_index_data[threadId];
-	int index_list=calculate_hash(my_word,my_word_length);
-	int vocab_list_index=d_table_indexes[index_list];
-	int vocab_list_length=d_table_indexes[index_list+1];
-
-	for(int i=vocab_list_index;i<vocab_list_length;i=+start_index_vocab[i+1]-start_index_vocab[i])
-	{
-		char* vocab=&d_vl[i];
-		int vocab_length=start_index_vocab[i+1]-start_index_vocab[i];
-		if(compare(my_word,vocab,my_word_length)==1)
-		{
-			d_fv[threadId]=d_positions[i];
-			break;
-		}
-	}
-}
-#endif
-
-#ifdef CUDA_FEATURE_VECTOR
-void FeatureConstructor::construct_feature_vectors(string** data_list,int* documents_size, int number_documents,int total_char_count,int total_word_count)
-{
-    printf("Began Feature Construction\n");
-    int hashIndex, position;
-	//int totalSize = calculate_table_size(documents_size,number_documents);
-
-    // set the number of rows to be equal number of documents
-    feature_vector =  (int*)malloc(sizeof(int)*total_word_count);
-    documents_labels = (int*)malloc(sizeof(int)*number_documents);
-
-    convert_labels_integers(data_list, number_documents);
-	extract_documents_indexes(documents_size, number_documents);
-    
-    // loop on every row and set number of columns to be equal of number of unique words
-    for(int i=0;i<total_word_count;i++)
-    {
-		feature_vector[i]=-1;
-    }
-	const int THREADS_Y = 1;
-	const int THREADS_X = 512;
-	const int BLOCKS_X = ceil(total_word_count/(float)THREADS_X);
-	const int BLOCKS_Y = 1;
-
-	dim3 blocks(BLOCKS_X,BLOCKS_Y);
-	dim3 threads(THREADS_X,THREADS_Y);
-
-	int* d_fv;//feature vector array (output)
-	char* d_cl;//char list array of the data list
-	char* d_vl;//hash table array
-	int* d_vl_index_start;//index of the d_vl
-	int* d_table_indexes;//index of the lists in the hash table
-	int* d_cl_index_start;//index of the d_cl
-	int* d_positions;//positions to be put in FV
-
-	//******TEMP FOR VOCAB COMPUTATION
-	int vocab_list_total_char_count=0;
-	for(int i=0;i<num_unique_words;i++)
-	{
-		vocab_list_total_char_count+= vocab_list[i].length();
-	}
-	//**************
-	//************TEMP FOR HASHTABLE
-	int* temp_positions;
-	int* temp_hashLists;
-	//**************
-
-
-	//allocate feature vector, char list(data list->chars), vocab list->char,index for vocab list and data list
-	cudaMalloc((void**)&d_fv,total_word_count*sizeof(int));
-
-	cudaMalloc((void**)&d_cl,total_char_count*sizeof(char));
-	cudaMalloc((void**)&d_vl,vocab_list_total_char_count*sizeof(char));
-
-	cudaMalloc((void**)&d_vl_index_start,num_unique_words*sizeof(int)+sizeof(int));
-	cudaMalloc((void**)&d_table_indexes,num_unique_words*sizeof(int));//****TO DO get the size
-
-	cudaMalloc((void**)&d_cl_index_start,total_word_count*sizeof(int)+sizeof(int));
-	cudaMalloc((void**)&d_positions,num_unique_words*sizeof(int));
-
-
-	//convert the datalist to char list and extract both indexes
-	string* h_dl;//temp to hold the data into 1D string array
-	//convert 2D array to 1D array of strings
-	h_dl = CudaStd::convert_2d_to_1d_string(data_list, number_documents,documents_size,total_word_count);
-	int* indexes_string_start_data=(int*)malloc(sizeof(int)*total_word_count);//indexes for the start and length of chars
-	//int* indexes_string_length_data=(int*)malloc(sizeof(int)*total_word_count);
-	//convert 1D array of strings to 1D array of chars
-	char* h_cl = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
-
-	
-	//processing the vocab list
-	int* indexes_string_start_vocab=(int*)malloc(sizeof(int)*num_unique_words);//indexes for the start and length of chars
-	//int* indexes_string_length_vocab=(int*)malloc(sizeof(int)*num_unique_words);
-	//convert 1D array of strings to 1D array of chars
-	char* h_vl = CudaStd::convert_string_arr_to_char_arr(vocab_list,num_unique_words,vocab_list_total_char_count,indexes_string_start_vocab);
-
-	//Add the last index in the indexes lists
-	d_cl_index_start[total_word_count]=total_char_count;
-	d_vl_index_start[num_unique_words]=vocab_list_total_char_count;
-
-	//copy Vocab list, vocab indexes, data indexes, char list
-	cudaMemcpy(d_cl,h_cl,total_char_count*sizeof(char),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_vl,h_vl,vocab_list_total_char_count*sizeof(char),cudaMemcpyHostToDevice);
-
-	//copying indexes lists
-	cudaMemcpy(d_vl_index_start,indexes_string_start_vocab,num_unique_words*sizeof(int)+sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_table_indexes,temp_hashLists,num_unique_words*sizeof(int),cudaMemcpyHostToDevice);
-
-	cudaMemcpy(d_cl_index_start,indexes_string_start_data,total_word_count*sizeof(int)+sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_positions,temp_positions,total_word_count*sizeof(int),cudaMemcpyHostToDevice);
-
-	construct_feature_vector_kernel<<<blocks,threads>>>(d_fv,d_cl,d_vl,d_cl_index_start,d_table_indexes,d_vl_index_start,d_positions);
-
-	cudaMemcpy(feature_vector,d_fv,total_word_count*sizeof(int),cudaMemcpyDeviceToHost);
-#ifndef CUDA_FEATURE_VECTOR
-    // loop over every document
-    for(int i=0;i<number_documents;i++)
-    {
-        for(int j=0;j<documents_size[i];j++)
-        {
-            // check if word can be used as feature word
-            if(!check_if_feature(data_list[i][j]))
-			{
-				position = -1;
-			}
-			else
-			{
-				// calculate index
-				hashIndex = SuperHash::create_hash(data_list[i][j], (int)data_list[i][j].length(),HASH_TABLE_SIZE);
-				// get the position of the word int he vocablist
-				position = hash_list[hashIndex].getPositionValue(data_list[i][j]);
-			}
-
-			feature_vector[documents_indexes[i] + j] = position;
-            
-			//printf("%i ",feature_vector[get_document_index(documents_size,i) + j]);
-        }
-		//printf("\n");
-		//printf("\n");
-        
-    }
-
-	
-	/***** DEALLOCATE UNUSED ARRAYS *****/
-	//for(int i = 0;i<HASH_TABLE_SIZE;i++)
-	//{
-	//	hash_list[i].Destroy();
-	//}
-
-	//delete[] hash_list;
-	#endif
-    printf("Ended Feature Construction\n");
-    
-}
-#endif

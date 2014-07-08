@@ -29,6 +29,10 @@ void TestResults::read_documents()
 
 void TestResults::extract_feature_vector()
 {
+	printf("FROM TEST RESULTS BEFORE: %d , %d\n", feature_constructor->total_char_count,feature_constructor->total_word_count);
+	feature_constructor->process_data_list(data_list,documents_size,number_documents);
+	printf("FROM TEST RESULTS AFTER: %d , %d\n", feature_constructor->total_char_count,feature_constructor->total_word_count);
+	//feature_constructor->construct_feature_vectors(data_list,documents_size,number_documents,feature_constructor->total_char_count,feature_constructor->total_word_count);
 	feature_constructor->construct_feature_vectors(data_list,documents_size,number_documents);
 	feature_vector=feature_constructor->feature_vector;
 }
