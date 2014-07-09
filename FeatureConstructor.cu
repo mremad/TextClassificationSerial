@@ -57,7 +57,7 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
     num_labels=0;
 	num_unique_words=0;
 	documents_size = document_size;
-	vocab_list= new string[total_word_count];
+
     label_list= new string[MAX_NUM_LABELS];
     hash_list= new LinkedList[HASH_TABLE_SIZE];
     max_List_Size=0;
@@ -68,9 +68,6 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
 
 }
 
-
-
-
 FeatureConstructor::FeatureConstructor(int* document_size, int number_documents,int total_characters_count,int total_words_count)
 {
     num_labels=0;
@@ -79,7 +76,7 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents,
 
     total_char_count=total_characters_count;
 	total_words_count= total_words_count;
-	vocab_list= new string[total_words_count];
+
     label_list= new string[MAX_NUM_LABELS];
     hash_list= new LinkedList[HASH_TABLE_SIZE];
     max_List_Size=0;
@@ -199,8 +196,6 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             {
                 // append word to the list
                 hash_list[hashIndex].Append((data_list[i][j]),num_unique_words);
-				// update the vocablist
-				vocab_list[num_unique_words]=data_list[i][j];
 				//printf("%s ",data_list[i][j]);
                 num_unique_words++;
             }
@@ -309,6 +304,18 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
     
 }
 
+__device__ int hash_str(const char* s, int str_length) 
+{ 
+	unsigned h = 31 /* also prime */; 
+
+	for(int i = 0; i < str_length;i++) 
+	{ 
+		h = (h * 54059 ) ^ (s[0] * 76963); 
+	} 
+
+	return h % HASH_TABLE_SIZE; 
+}
+
 __device__ uint32_t hash_inc(const char * data, int len, uint32_t hash)
 {
     uint32_t tmp;
@@ -372,6 +379,7 @@ struct  data_collection{
   int*  data_start_indexes;
   char* hash_array; 
   int*  words_per_hash_row;
+  int* vocab_list_indices;
   int total_word_count;
   int total_char_count;
   int hash_table_size;
@@ -385,6 +393,8 @@ __global__ void construct_feature_vector_kernel (int* d_fv, data_collection d_da
 {
 	int threadId = threadIdx.x + blockIdx.x*blockDim.x;
 	
+	if(threadId >= d_data.total_word_count)
+		return;
 	
 	int my_word_start=d_data.data_start_indexes[threadId];
 	//char* my_word=&d_data.char_data_list [my_word_start];
@@ -394,29 +404,13 @@ __global__ void construct_feature_vector_kernel (int* d_fv, data_collection d_da
 	else
 		 my_word_length=d_data.total_char_count-d_data.data_start_indexes[threadId];
 
-	int index_list=hash_inc(&d_data.char_data_list [my_word_start],my_word_length,(uint32_t) my_word_length);
+	int index_list=hash_str(&d_data.char_data_list [my_word_start],my_word_length);
 	int vocab_list_index=index_list*d_data.hash_row_size*d_data.hash_word_size;
 	int vocab_list_length=d_data.words_per_hash_row[index_list]*d_data.hash_word_size;
-	//if(threadId<600)
-		//d_fv[threadId]=vocab_list_index;
-	//if(threadId==0)
-	//	{
-		//	d_fv[threadId]=my_word_start;
-		//	d_fv[threadId+1]=my_word_length;
-		//	for(int j=0;j<500;j++)
-			// {
-		//		 vocab_list[j]=d_data.hash_array[vocab_list_index+j];
-/////
-		//	}
-	//	}
 
-	//d_fv[2]=3;
 	for(int i=vocab_list_index;(i<vocab_list_length+vocab_list_index) && (my_word_start+my_word_length < d_data.total_char_count );i+=d_data.hash_word_size)
 	{
-		//char* vocab=&d_data.hash_array[i];
-		//if(threadId<600)
-			//d_fv[threadId]=compare(my_word,vocab,my_word_length);
-		//d_fv[threadId]=i;
+
 		if(compare(&d_data.char_data_list [my_word_start],&d_data.hash_array[i],my_word_length)==1)
 		{
 			d_fv[threadId]=i;
@@ -631,6 +625,10 @@ __device__ int atomic_add(int *address, int value)
 __global__ void extract_vocab_kernel(dataCollection d_data  )
 {
 	int threadId = threadIdx.x + blockIdx.x*blockDim.x;
+
+	if(threadId >= d_data.total_word_count)
+		return;
+
 	char *word;
 	int startIndex, wordLength, hashValue;
 	bool wordFound=false;
@@ -653,7 +651,7 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 
 
 	// get the hash value of the current word
-	hashValue= hash_inc(word,wordLength,(uint32_t) wordLength);
+	hashValue= hash_str(word,wordLength);
 	
 	// Loop in the words in the hash table row with same hash value 
 	// to see if word exists or not
@@ -711,6 +709,10 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
      indexes_string_start_data=(int*)malloc(sizeof(int)*total_word_count);//indexes for the start and length of chars
     //convert 1D array of strings to 1D array of chars
 	 h_charDataList = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
+
+	 for(int i = 0;i<20;i++)
+		 printf("%c",h_charDataList[i]);
+	 printf("\n");
 
 	 //Allocate memory to arrays on the host
 	 // size of h_hash_array= (number of rows in hash table)* (each row size)* (size of each word) 

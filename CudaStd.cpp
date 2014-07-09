@@ -1,12 +1,12 @@
 #include "CudaStd.h"
 using namespace std;
-long double** CudaStd::convert_1d_to_2d_float(long double* src, int rows, int cols)
+double** CudaStd::convert_1d_to_2d_float(double* src, int rows, int cols)
 {
-	long double** dest = (long double**)malloc(rows*sizeof(long double*));
+	double** dest = (double**)malloc(rows*sizeof(double*));
 
 	for(int i = 0;i < rows;i++)
 	{
-		dest[i] = (long double*)malloc(cols*sizeof(long double));
+		dest[i] = (double*)malloc(cols*sizeof(double));
 
 		for(int j = 0;j < cols;j++)
 		{
@@ -36,9 +36,9 @@ int** CudaStd::convert_1d_to_2d_int(int* src, int rows, int cols)
 	return dest;
 }
 
-long double* CudaStd::convert_2d_to_1d_float(long double** src, int rows, int cols)
+double* CudaStd::convert_2d_to_1d_float(double** src, int rows, int cols)
 {
-	long double* dest = (long double*)malloc(rows*cols*sizeof(long double));
+	double* dest = (double*)malloc(rows*cols*sizeof(double));
 
 	for(int i = 0;i < rows;i++)
 	{

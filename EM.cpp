@@ -16,7 +16,7 @@ void EM::classify_all_unlabeled_documents(NaiveBayesClassifier* classifier, int*
 	}
 }
 
-void EM::copy_parameters(long double** src_likelihood, long double* src_prior, long double** dest_likelihood, long double* dest_prior, int number_labels, int number_unique_words)
+void EM::copy_parameters(double** src_likelihood, double* src_prior, double** dest_likelihood, double* dest_prior, int number_labels, int number_unique_words)
 {
     for(int i = 0;i<number_labels;i++)
     {
@@ -34,13 +34,13 @@ void EM::copy_labels(int* new_labels, int* old_labels, int num_labels)
 
 }
 
-bool EM::check_if_converged(long double** old_likelihood, long double* old_prior, long double** new_likelihood, long double* new_prior, int number_labels, int number_unique_words)
+bool EM::check_if_converged(double** old_likelihood, double* old_prior, double** new_likelihood, double* new_prior, int number_labels, int number_unique_words)
 {
     bool result = false;
     
-    long double total_diff = 0;
+    double total_diff = 0;
     
-    long double threshold = EM_CONVERGENCE_THRESHOLD;
+    double threshold = EM_CONVERGENCE_THRESHOLD;
     
     for(int i = 0;i<number_labels;i++)
     {
@@ -108,8 +108,8 @@ void EM::build_seperate_fv(int* fv, int* docs_sizes, int* docs_ind, int* docs_la
 
 void EM::initialize_weights(int num_labeled_docs, int num_unlabeled_docs, int num_labels)
 {
-	weights = (long double*)malloc(sizeof(long double)*(num_labeled_docs + num_unlabeled_docs)*num_labels);
-	weights_unlabeled = (long double*)malloc(sizeof(long double)*num_unlabeled_docs*num_labels);
+	weights = (double*)malloc(sizeof(double)*(num_labeled_docs + num_unlabeled_docs)*num_labels);
+	weights_unlabeled = (double*)malloc(sizeof(double)*num_unlabeled_docs*num_labels);
 
 	for(int i = 0; i < num_labeled_docs;i++)
 	{
@@ -156,8 +156,8 @@ void EM::run_em(NaiveBayesClassifier* classifier, int* feature_vectors,int* docs
     
     /*Initialize arrays to store old parameters*/
     
-    long double**	old_likelihood	= (long double**)malloc(sizeof(long double*)*number_labels);
-    long double*	old_prior		= (long double*)malloc(sizeof(long double)*number_labels);
+    double**	old_likelihood	= (double**)malloc(sizeof(double*)*number_labels);
+    double*	old_prior		= (double*)malloc(sizeof(double)*number_labels);
 	int*			old_labels		= (int*)malloc(sizeof(int)*number_unlabeled_documents);
 
 	labeled_fv = (int*)malloc(sizeof(int)*calculate_size_feature_vector(labeled_docs,docs_sizes,number_labeled_documents));
@@ -173,7 +173,7 @@ void EM::run_em(NaiveBayesClassifier* classifier, int* feature_vectors,int* docs
 	unlabeled_doc_labels = (int*)malloc(sizeof(int)*number_unlabeled_documents);
     
     for(int i = 0;i<number_labels;i++)
-        old_likelihood[i] = (long double*)malloc(sizeof(long double)*number_unique_words);
+        old_likelihood[i] = (double*)malloc(sizeof(double)*number_unique_words);
     
 	all_doc_labels = docs_labels;
 	this->labeled_docs = labeled_docs;

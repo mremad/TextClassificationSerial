@@ -19,9 +19,9 @@ void ConsolePrint::create_dummy_fv(int* vocab_size, int* document_size, int ** f
 	}
 }
 
-void ConsolePrint::print_1d_float(int num_columns, long double * fv)
+void ConsolePrint::print_1d_float(int num_columns, double * fv)
 {
-    printf("Printing Long Double Array: \n");
+    printf("Printing double Array: \n");
     for(int j = 0;j<num_columns;j++)
     {
         printf("%Lf\t",fv[j]);
@@ -40,9 +40,9 @@ void ConsolePrint::print_1d_int(int vocab_size, int * fv)
     printf("\n");
 }
 
-void ConsolePrint::print_2d_float(int num_columns, int num_rows, long double ** fv)
+void ConsolePrint::print_2d_float(int num_columns, int num_rows, double ** fv)
 {
-    printf("Printing Long Double Array: \n");
+    printf("Printing double Array: \n");
 	for(int i = 0;i<num_rows;i++)
 	{
 		for(int j = 0;j<num_columns;j++)

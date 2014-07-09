@@ -37,7 +37,7 @@ class LinkedList {
     Node *head;
 public:
     LinkedList() { head = NULL; };
-	void LinkedList::Destroy();
+	void Destroy();
     void Print();
     int Append(string data, int position);
     void Delete(string data);

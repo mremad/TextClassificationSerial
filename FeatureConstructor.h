@@ -6,7 +6,7 @@
 #include <string>
 #include "SuperHash.h"
 #include "LinkedList.h"
-#include "cudaStd.h"
+#include "CudaStd.h"
 using namespace std;
 
 
@@ -34,8 +34,7 @@ class FeatureConstructor
 	
     int				max_List_Size;
     int				collissions;
-	//1D array of the unique vocabulary. Size: N
-    string*			vocab_list;
+
     
     int		hash_str(string word, int tableSize);
     bool	check_if_feature(string word);

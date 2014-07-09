@@ -157,7 +157,7 @@ void FileReader::read_files()
 {
 	string line;
 	data_list = (string**)malloc(sizeof(string*)*num_docs);
-	ifstream myfile (path);
+	ifstream myfile (path.c_str());
 	if (myfile.is_open())
 	{
 		int i=0;
