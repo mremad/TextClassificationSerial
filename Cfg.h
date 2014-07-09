@@ -11,7 +11,7 @@
 #define TEST_PATH_SHAABAN "TestData.txt"
 
 #define HASH_TABLE_SIZE 2039
-#define HASH_ROW_SIZE 80
+#define HASH_ROW_SIZE 300
 #define HASH_WORD_SIZE 100
 
 #define MAX_NUM_LABELS 20
@@ -28,3 +28,4 @@
 #define EM_MAX_ITERATIONS			5
 #define EM_CONVERGENCE_THRESHOLD	0.001
 #define EM_WEIGHTS_THRESHOLD		-1
+

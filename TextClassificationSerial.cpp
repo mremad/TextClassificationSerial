@@ -23,6 +23,7 @@ int main(int argc, char* argv[])
     FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
     fr.read_files();
     fr.read_files_per_label(desired_labeled/num_labels, num_labels);
+
    
     document_size = desired_labeled;
     desired_labeled = 20;
@@ -38,6 +39,7 @@ int main(int argc, char* argv[])
 		
 	LabelFactory lf = LabelFactory();
     lf.select_labeled_docs(fc.documents_labels,document_size,desired_labeled,fc.num_labels);
+
    
     NaiveBayesClassifier nc = NaiveBayesClassifier(fc.num_labels,fc.num_unique_words);
    
@@ -59,6 +61,8 @@ int main(int argc, char* argv[])
     tr.start_test();
  
     printf("Program terminated safely\n");
+
     getchar();
     return 0;
 }
+

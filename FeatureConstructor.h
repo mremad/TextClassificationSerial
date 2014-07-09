@@ -15,6 +15,7 @@ struct dataCollection {
   int* d_indexes_string_start;
   char* d_HashArray; 
   int* d_words_per_hash_row;
+  int* d_word_index_in_vocab;
   int total_word_count;
   int total_char_count;
   int hash_table_size;
@@ -31,6 +32,7 @@ class FeatureConstructor
     char *          h_hash_array;
     int *           h_words_per_hash_row;
     int *           startPos_in_hash_row;
+	int*			h_word_index_in_vocab;
 	
     int				max_List_Size;
     int				collissions;
@@ -73,7 +75,6 @@ class FeatureConstructor
 	void	process_data_list(string** data_list, int* documents_size, int number_documents);
     //Should handle both cases of labeled/unlabeled
     void	construct_feature_vectors(string** data_list, int* documents_size, int number_documents);
-	void	construct_feature_vectors(string** data_list,int* documents_size, int number_documents,int total_char_count, int total_word_count);
 	
 };
 

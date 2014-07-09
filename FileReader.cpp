@@ -1,4 +1,6 @@
 #include "FileReader.h"
+#include "Cfg.h"
+
 using namespace std;
 const int FIXED_STRING_SIZE=25;
 FileReader::FileReader(int docs_to_read, string document_path)
@@ -15,7 +17,7 @@ bool FileReader::check_if_feature(string word)
 {
     bool check = true;
     
-    if(word.length() <= 3)
+	if(word.length() <= 3 || word.length()> (HASH_WORD_SIZE-1))
     {
         check = false;
     }
