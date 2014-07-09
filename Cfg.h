@@ -16,7 +16,7 @@
 
 #define MAX_NUM_LABELS 20
 
-#define CUDA_FEATURE_VECTOR
+//#define CUDA_FEATURE_VECTOR
 //#define CUDA_LIKELIHOOD
 //#define CUDA_CLASSIFY
 

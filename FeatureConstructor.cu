@@ -27,6 +27,8 @@ void FeatureConstructor::process_data_list(string** data_list,int* documents_siz
 			total_char_count+=data_list[i][j].length();
 		}
 	}
+
+	
 }
 
 int calculate_table_size(int* documents_size, int number_documents)
@@ -137,7 +139,7 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
             printf("100%% Completed: %d Unique words found: %d\n",i,num_unique_words);
             
         // loop over all words in this document
-        for(int j=1;j<documents_size[i];j++)
+        for(int j=0;j<documents_size[i];j++)
         {
             // calculate the hash index
             int hashIndex= SuperHash::create_hash(data_list[i][j], (int)data_list[i][j].length(),HASH_TABLE_SIZE);

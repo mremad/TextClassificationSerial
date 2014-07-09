@@ -112,15 +112,21 @@ void NaiveBayesClassifier::calculate_likelihood(int * feature_vectors, int * doc
 	cudaMalloc((void**)&d_weights,number_documents*number_labels*sizeof(double));
 	cudaMallocPitch(&d_fp,&pitch_fp,number_unique_words*sizeof(double),number_labels);
 
+
+
 	cudaMemcpy(d_fv,feature_vectors,FV_SIZE*sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_weights,weights,number_documents*number_labels*sizeof(double),cudaMemcpyHostToDevice);
+	
+	if(weights)
+		cudaMemcpy(d_weights,weights,number_documents*number_labels*sizeof(double),cudaMemcpyHostToDevice);
 
 	cudaMemcpy(d_doc_size,documents_size,number_documents*sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_doc_label,docs_labels,number_documents*sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_doc_ind,documents_indexes,number_documents*sizeof(int),cudaMemcpyHostToDevice);
 
 	calculate_occurences_kernel<<<blocks,threads>>>(d_fv,d_occurences,d_doc_size,d_doc_ind,d_doc_label,pitch_occ,number_documents,number_unique_words,number_labels,d_weights);
+
 	calculate_likelihood_kernel<<<blocks,threads>>>(d_fp,d_occurences,pitch_occ,pitch_fp,number_unique_words,number_labels);
+
 
 	cudaMemcpy2D(h_fp,number_unique_words*sizeof(double),d_fp,pitch_fp,number_unique_words*sizeof(double),number_labels,cudaMemcpyDeviceToHost);
 
