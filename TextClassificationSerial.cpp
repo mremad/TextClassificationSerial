@@ -23,18 +23,17 @@ int main(int argc, char* argv[])
         FileReader fr = FileReader(document_size,DATA_PATH_SHAABAN);
     fr.read_files();
     fr.read_files_per_label(desired_labeled/num_labels, num_labels);
-   
-        document_size = desired_labeled;
-        desired_labeled = 20;
- 
-        FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size,fr.total_word_count,fr.total_char_count);
-        fc.process_data_list(fr.data_list,fr.documents_size,document_size);
+    
+	document_size = desired_labeled;
+	desired_labeled = 20;
+
+	FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
+	fc.process_data_list(fr.data_list,fr.documents_size,document_size);
     //fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
-        fc.extract_vocab(fr.data_list,fr.documents_size,document_size,fc.total_word_count,fc.total_char_count);
-    //fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
-        fc.construct_feature_vectors(fr.data_list,fr.documents_size, document_size,fc.total_char_count, fc.total_word_count);
- 
-        fr.deallocate();
+	fc.extract_vocab(fr.data_list,fr.documents_size,document_size,fc.total_word_count,fc.total_char_count);
+    fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
+        
+	fr.deallocate();
     LabelFactory lf = LabelFactory();
         lf.select_labeled_docs(fc.documents_labels,document_size,desired_labeled,fc.num_labels);
    
