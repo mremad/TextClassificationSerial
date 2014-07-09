@@ -45,12 +45,10 @@ class FeatureConstructor
 	
 	int		get_document_index(int* documents_size, int doc_num);
 	void	extract_documents_indexes(int* documents_size,int number_documents);
-	
-    public:
+
+public:
     FeatureConstructor();
-	FeatureConstructor(int* document_size, int number_documents);
-    FeatureConstructor(int* document_size, int number_documents,int total_characters_count,int total_words_count);
-    
+	FeatureConstructor(int* document_size, int number_documents); 
 
     //1D array of the labeled documents feature vectors. Size:DxN
     int *	feature_vector;
@@ -71,9 +69,11 @@ class FeatureConstructor
     
     void	extract_vocab(string** data_list, int* documents_size, int number_documents);
 	void	extract_vocab(string** data_list,int* documents_size, int number_documents, int total_word_count, int total_char_count);
+
 	void	extract_labels(string** data_list, int number_documents);
 	void	process_data_list(string** data_list, int* documents_size, int number_documents);
-    //Should handle both cases of labeled/unlabeled
+    
+	//Should handle both cases of labeled/unlabeled
     void	construct_feature_vectors(string** data_list, int* documents_size, int number_documents);
 	
 };

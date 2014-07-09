@@ -29,11 +29,11 @@ int main(int argc, char* argv[])
     desired_labeled = 20;
  
     FeatureConstructor fc = FeatureConstructor(fr.documents_size,document_size);
-    //fc.process_data_list(fr.data_list,fr.documents_size,document_size);
-	fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
-    //fc.extract_vocab(fr.data_list,fr.documents_size,document_size,fc.total_word_count,fc.total_char_count);
-	fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
-    //fc.construct_feature_vectors(fr.data_list,fr.documents_size, document_size,fc.total_char_count, fc.total_word_count);
+    fc.process_data_list(fr.data_list,fr.documents_size,document_size);
+	//fc.extract_vocab(fr.data_list, fr.documents_size, document_size);
+    fc.extract_vocab(fr.data_list,fr.documents_size,document_size,fc.total_word_count,fc.total_char_count);
+	//fc.construct_feature_vectors(fr.data_list, fr.documents_size, document_size);
+    fc.construct_feature_vectors(fr.data_list,fr.documents_size, document_size);
  
     fr.deallocate();
 		

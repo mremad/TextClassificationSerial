@@ -74,10 +74,7 @@ void LabelFactory::create_labeled_fv()
 		processed_vectors[index_in_fv]=1;
 		label_index_in_FV[i]=index_in_fv;
 		label_frequency[documents_labels[i]]++;
-
-		printf("%d ",documents_labels[index_in_fv]);
 	}
-	printf("\n");
 
 }
 
@@ -93,7 +90,6 @@ void LabelFactory::check_labeled_count()
 				if(j==desired_labeled_documents-1)
 				{
 					bool done=false;
-					printf("\nMissing label %i \n",i);
 					for(int k=0;k<total_number_documents;k++)
 					{
 						if(documents_labels[k]==i && processed_vectors[k]==0)

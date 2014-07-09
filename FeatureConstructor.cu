@@ -54,7 +54,6 @@ FeatureConstructor::FeatureConstructor(int* document_size, int number_documents)
 
 }
 
-
 int FeatureConstructor::hash_str(string word, int tableSize)
 {
     int h = 31 /* also prime */;
@@ -388,17 +387,11 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 	cudaFree(d_word_index_in_vocab);
 	free(h_cl);
 	free(indexes_string_start_data);
-	for(int i=0;i<total_word_count;i++)
-	{
-		if(feature_vector[i]!=-5)
-			printf("%d In %dS ",feature_vector[i],i);
-	}
+
     printf("Ended Feature Construction\n");
    
 #endif 
 }
-
-
 
 __device__ int atomic_add(int *address, int value)
 {
@@ -428,7 +421,6 @@ __device__ void shiftData( char* source, int data_length, int shift)
 	}
 	
 }
-
 
 __global__ void remove_duplicates_in_hashTable(dataCollection d_data)
 {
@@ -537,7 +529,6 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 	
 }
 
-
 void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents, int total_word_count, int total_char_count)
 {
      //loop over all documents and extract all labels
@@ -561,9 +552,6 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
     //convert 1D array of strings to 1D array of chars
 	 h_charDataList = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
 
-	 for(int i = 0;i<20;i++)
-		 printf("%c",h_charDataList[i]);
-	 printf("\n");
 
 	 //Allocate memory to arrays on the host
 	 // size of h_hash_array= (number of rows in hash table)* (each row size)* (size of each word) 
