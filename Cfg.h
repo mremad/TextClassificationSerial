@@ -1,3 +1,5 @@
+#ifndef _CFG
+#define _CFG
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <ctime>
@@ -16,7 +18,10 @@
 
 #define MAX_NUM_LABELS 20
 
-//#define CUDA_FEATURE_VECTOR
+#define CODE_CUDA  0
+#define CODE_SERIAL  1
+
+#define CUDA_FEATURE_VECTOR
 //#define CUDA_LIKELIHOOD
 //#define CUDA_CLASSIFY
 
@@ -27,5 +32,7 @@
 
 #define EM_MAX_ITERATIONS			5
 #define EM_CONVERGENCE_THRESHOLD	0.001
-#define EM_WEIGHTS_THRESHOLD		-1
+#define EM_WEIGHTS_THRESHOLD		0.8
 
+
+#endif

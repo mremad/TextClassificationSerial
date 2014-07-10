@@ -1,5 +1,8 @@
 #include "CudaStd.h"
 using namespace std;
+
+int CudaStd::cuda_ver = CODE_CUDA;
+
 double** CudaStd::convert_1d_to_2d_float(double* src, int rows, int cols)
 {
 	double** dest = (double**)malloc(rows*sizeof(double*));

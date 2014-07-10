@@ -7,6 +7,7 @@
 #include "SuperHash.h"
 #include "LinkedList.h"
 #include "CudaStd.h"
+#include "Cfg.h"
 using namespace std;
 
 

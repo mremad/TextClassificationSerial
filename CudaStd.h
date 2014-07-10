@@ -4,10 +4,14 @@
 #include <fstream>
 #include <string>
 #include <stdlib.h>
+#include "Cfg.h"
+
 using namespace std;
 class CudaStd
 {
 public:
+	static int cuda_ver;
+
 	static double**	convert_1d_to_2d_float(double* src, int rows, int cols);
 	static int**			convert_1d_to_2d_int(int* src, int rows, int cols);
 	static double*		convert_2d_to_1d_float(double** src, int rows, int cols);
