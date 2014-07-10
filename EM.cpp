@@ -52,7 +52,7 @@ bool EM::check_if_converged(double** old_likelihood, double* old_prior, double**
         total_diff += fabs(old_prior[i]-new_prior[i]);
     }
     
-    printf("Total Difference: %Lf\n",total_diff);
+    printf("Parameter Iteration Difference: %f\n",total_diff);
     
     if(total_diff < threshold)
         result = true;
@@ -192,8 +192,10 @@ void EM::run_em(NaiveBayesClassifier* classifier, int* feature_vectors,int* docs
 	for(int i = 0; i < EM_MAX_ITERATIONS;i++)
 	{
 		
+		printf("Iteration number: %d\n",(i+1));
+
 		/*E Step*/
-        printf("Performing E Step\n");
+        printf("\t\tPerforming E Step\n");
 
 		classify_all_unlabeled_documents(classifier,unlabeled_fv,unlabeled_docs_sizes,unlabeled_docs_ind,number_unique_words,number_unlabeled_documents,number_labels,unlabeled_doc_labels);
         
@@ -205,7 +207,7 @@ void EM::run_em(NaiveBayesClassifier* classifier, int* feature_vectors,int* docs
 
         /*M Step*/
         
-        printf("Performing M Step\n");
+        printf("\t\tPerforming M Step\n");
 
         copy_parameters(classifier->get_likelihood(), classifier->get_prior(), old_likelihood, old_prior, number_labels, number_unique_words);
 		copy_labels(unlabeled_doc_labels, old_labels, number_unlabeled_documents);
@@ -221,6 +223,38 @@ void EM::run_em(NaiveBayesClassifier* classifier, int* feature_vectors,int* docs
         
 		
 	}
-    
+
+    for(int i = 0;i<number_labels;i++)
+		free(old_likelihood[i]);
+
+	free(old_likelihood);
+	free(old_prior);
+	free(old_labels);
+
     printf("EM Process Done\n");
+}
+
+void EM::deallocate()
+{
+	free( labeled_fv );
+	free( unlabeled_fv);
+
+	free( labeled_docs_sizes);
+	free( unlabeled_docs_sizes);
+
+	free( labeled_docs_ind);
+	free( unlabeled_docs_ind);
+
+	free( labeled_doc_labels);
+	free( unlabeled_doc_labels);
+	free( all_doc_labels);
+
+	free( labeled_docs);
+	free( unlabeled_docs);
+
+	if(weights)
+		free( weights);
+
+	if(weights_unlabeled)
+		free( weights_unlabeled);
 }

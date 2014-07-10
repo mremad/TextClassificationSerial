@@ -34,6 +34,7 @@ public:
 	void		calculate_prior(int* documents_labels, int number_documents, int number_labels);
 	int			classify_unlabeled_document(int * unlabeled_feature_vector, int fv_size, int number_unique_words, int number_labels, double* prob_labels);
 	void		classify_unlabeled_documents(int* feature_vectors, int* docs_sizes, int* docs_indexes, int num_documents, int num_unique_words, int num_labels, int * labels, double* prob_labels);
+	void		deallocate();
 };
 
 #endif

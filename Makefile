@@ -11,16 +11,16 @@ BIN               := TextClassification
 CXXFLAGS          := 
 
 
-CUDA_INSTALL_PATH ?= /opt/cuda/6.0
-CUDA_SDK_PATH ?= /opt/cuda/6.0
+CUDA_INSTALL_PATH ?= /usr/local_rwth/sw/cuda/6.0.37
+CUDA_SDK_PATH ?= /usr/local_rwth/sw/cuda/6.0.37
 
 
-NVCC ?= $(CUDA_INSTALL_PATH)/bin/nvcc
+NVCC ?= nvcc
 INCD = -I"$(CUDA_SDK_PATH)/C/common/inc" -I"$(CUDA_INSTALL_PATH)/include" -I"./"
 LIBS = -L"/opt/development/gpu/3.2/libcuda" -lcuda -L"$(CUDA_INSTALL_PATH)/lib64" -lcudart -L"$(CUDA_SDK_PATH)/C/common/lib"
-CUDA_SDK?=3
+CUDA_SDK?=6
 COMMONFLAGS = -DCUDA_SDK=$(CUDA_SDK)
-NVCCFLAGS := -arch sm_13 --ptxas-options=-v -O3 -G -g 
+NVCCFLAGS :=  -arch=sm_13 
 
 
 # files
@@ -34,7 +34,7 @@ CU_OBJS           := $(patsubst %.cu, %.cu_o, $(CU_SOURCES))
 	$(NVCC) $(NVCCFLAGS) -c $(INCD) -o $@ $<
 
 %.o: %.cpp
-	$(CXX) -c $(CXXFLAGS) $(INCD) -o $@ $<
+	$(NVCC) -c $(CXXFLAGS) $(NVCCFLAGS) $(INCD) -o $@ $<
 
 $(BIN): $(CPP_OBJS) $(CU_OBJS)
 	$(CXX) -o $(BIN) $(CU_OBJS) $(CPP_OBJS) $(LDFLAGS) $(INCD) $(LIBS)

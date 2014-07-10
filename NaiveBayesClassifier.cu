@@ -81,7 +81,7 @@ __global__ void calculate_likelihood_kernel(double* d_fp,double* d_occ, size_t p
 
 void NaiveBayesClassifier::calculate_likelihood(int * feature_vectors, int * documents_size, int * documents_indexes, int * docs_labels, int number_unique_words, int number_documents, int number_labels, double* weights)
 {
-	printf("Calculating First parameter...\n");
+	printf("Calculating Likelihood...\n");
 
 	this->weights = weights;
 	this->num_labels = number_labels;
@@ -407,7 +407,7 @@ int NaiveBayesClassifier::calculate_label_occurance(int * documents_labels, int 
 
 void NaiveBayesClassifier::calculate_prior(int* documents_labels, int number_documents, int number_labels)
 {
-    printf("Calculating Second Parameter: \n");
+    printf("Calculating Prior... \n");
 	int denom = number_documents+number_labels;
     
 	for(int i = 0;i<number_labels;i++)
@@ -429,4 +429,19 @@ double ** NaiveBayesClassifier::get_likelihood()
 double *  NaiveBayesClassifier::get_prior()
 {
     return second_parameter;
+}
+
+void NaiveBayesClassifier::deallocate()
+{
+	free(weights);
+	free(second_parameter);
+
+	for(int i = 0;i<num_labels;i++)
+	{
+		free(first_parameter[i]);
+	}
+
+	free(first_parameter);
+
+
 }

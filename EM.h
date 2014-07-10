@@ -37,7 +37,7 @@ class EM
 	public:
 		EM();
 		void run_em(NaiveBayesClassifier* classifier, int* feature_vectors,int* docs_sizes, int* docs_ind,int* docs_labels, int* labeled_docs, int* unlabeled_docs, int number_unique_words,int number_unlabeled_documents, int number_labeled_documents, int number_labels);
-    
+		void deallocate();
 };
 
 #endif
