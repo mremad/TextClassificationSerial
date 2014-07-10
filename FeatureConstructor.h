@@ -69,7 +69,6 @@ public:
 	int total_word_count;
     
     void	extract_vocab(string** data_list, int* documents_size, int number_documents);
-	void	extract_vocab(string** data_list,int* documents_size, int number_documents, int total_word_count, int total_char_count);
 
 	void	extract_labels(string** data_list, int number_documents);
 	void	process_data_list(string** data_list, int* documents_size, int number_documents);

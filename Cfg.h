@@ -21,9 +21,7 @@
 #define CODE_CUDA  0
 #define CODE_SERIAL  1
 
-#define CUDA_FEATURE_VECTOR
-//#define CUDA_LIKELIHOOD
-//#define CUDA_CLASSIFY
+
 
 #define CLASSIFY_THREADS_X			1024
 #define CLASSIFY_THREADS_Y			1

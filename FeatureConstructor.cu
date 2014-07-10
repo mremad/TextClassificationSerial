@@ -3,12 +3,6 @@
 
 using namespace std;
 
-dataCollection dataCollection_new()
-{
-	 dataCollection a;
-
-  return a;
-}
 
 FeatureConstructor::FeatureConstructor()
 {
@@ -113,53 +107,6 @@ void FeatureConstructor::extract_documents_indexes(int* documents_size, int numb
 	}
 }
 
-//Builds a list of all unique words in vocab_list from data_list
-void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents)
-{
-    
-    // loop over all documents and extract all labels
-    printf("Began Vocab Extraction\n");
-    
-	extract_labels(data_list,number_documents);
-
-    // loop over documents
-    for(int i=0;i<number_documents; i++)
-    {
-        if( ((float)i/number_documents) == ((float)80/100) )
-            printf("80%% Completed: %d Unique words found: %d\n",i,num_unique_words);
-        else if(((float)i/number_documents) == ((float)60/100))
-            printf("60%% Completed: %d Unique words found: %d\n",i,num_unique_words);
-        else if(((float)i/number_documents) == ((float)40/100))
-            printf("40%% Completed: %d Unique words found: %d\n",i,num_unique_words);
-        else if(((float)i/number_documents) == ((float)20/100))
-            printf("20%% Completed: %d Unique words found: %d\n",i,num_unique_words);
-        else if(((float)i/number_documents) == ((float)10/100))
-            printf("10%% Completed: %d Unique words found: %d\n",i,num_unique_words);
-        else if(i == number_documents - 1)
-            printf("100%% Completed: %d Unique words found: %d\n",i,num_unique_words);
-            
-        // loop over all words in this document
-        for(int j=0;j<documents_size[i];j++)
-        {
-            // calculate the hash index
-            int hashIndex= SuperHash::create_hash(data_list[i][j], (int)data_list[i][j].length(),HASH_TABLE_SIZE);
-            // if the word wasn't already added to the list in the specified index
-            if(!hash_list[hashIndex].Exists(data_list[i][j]))
-            {
-                // append word to the list
-                hash_list[hashIndex].Append((data_list[i][j]),num_unique_words);
-
-				//printf("%s ",data_list[i][j]);
-                num_unique_words++;
-            }
-           
-        }
-    }
-
-	//printf("\n");
-    
-    printf("Ended Vocab Extraction\n");
-}
 
 int FeatureConstructor::get_index_for_label(string label)
 {
@@ -262,11 +209,7 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 {
     
     printf("Began Feature Construction\n");
-#ifndef CUDA_FEATURE_VECTOR
-    int hashIndex, position;
-	//int totalSize = calculate_table_size(documents_size,number_documents);
 
-#endif
     feature_vector =  (int*)malloc(sizeof(int)*total_word_count);
     documents_labels = (int*)malloc(sizeof(int)*number_documents);
 
@@ -274,7 +217,10 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 	extract_documents_indexes(documents_size, number_documents);
     
 
-#ifndef CUDA_FEATURE_VECTOR
+if(CudaStd::cuda_ver == CODE_SERIAL)
+	{
+	 int hashIndex, position;
+	//int totalSize = calculate_table_size(documents_size,number_documents);
 	// loop on every row and set number of columns to be equal of number of unique words
     for(int i=0;i<total_word_count;i++)
     {
@@ -308,10 +254,11 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 	//}
 
 	//delete[] hash_list;
+}
 
-#endif
 
-#ifdef CUDA_FEATURE_VECTOR
+if(CudaStd::cuda_ver == CODE_CUDA)
+	{
    
 	const int THREADS_Y = 1;
 	const int THREADS_X = 512;
@@ -392,7 +339,7 @@ void FeatureConstructor::construct_feature_vectors(string** data_list,int* docum
 
     printf("Ended Feature Construction\n");
    
-#endif 
+	}
 }
 
 __device__ int atomic_add(int *address, int value)
@@ -531,7 +478,8 @@ __global__ void extract_vocab_kernel(dataCollection d_data  )
 	
 }
 
-void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents, int total_word_count, int total_char_count)
+//Builds a list of all unique words in vocab_list from data_list
+void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, int number_documents)
 {
      //loop over all documents and extract all labels
     printf("Began Labels Extraction\n");
@@ -539,136 +487,151 @@ void FeatureConstructor::extract_vocab(string** data_list,int* documents_size, i
     printf("End of  Labels Extraction\n");
 
     printf("Began Vocab Extraction\n");
-
-	// initialize variables
-	int* indexes_string_start_data;
-	char* h_charDataList;
-	string* h_dl;
-	char *d_hash_array, *d_charDataList;
-	int *d_words_per_hash_row, *d_indexes_string_start_data  ;
-
-    //convert 2D array to 1D array of strings
-	 h_dl = CudaStd::convert_2d_to_1d_string(data_list, number_documents,documents_size,total_word_count);
-	// get start index of each word
-     indexes_string_start_data=(int*)malloc(sizeof(int)*total_word_count);//indexes for the start and length of chars
-    //convert 1D array of strings to 1D array of chars
-	 h_charDataList = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
-
-
-	 //Allocate memory to arrays on the host
-	 // size of h_hash_array= (number of rows in hash table)* (each row size)* (size of each word) 
-	h_hash_array=(char*) malloc(sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
-	h_words_per_hash_row= (int*)malloc(sizeof(int)*HASH_TABLE_SIZE);
-
-	// initialize h_words_per_hash_row with zeros
-	for(int i=0;i<HASH_TABLE_SIZE;i++)
+	if(CudaStd::cuda_ver == CODE_SERIAL)
 	{
-		h_words_per_hash_row[i]=0;
-	}
-	
-	//allocate memory on the device
-	cudaMalloc((void**)&d_charDataList,sizeof(char)*total_char_count);
-	cudaMalloc((void**)&d_indexes_string_start_data,sizeof(int)*total_word_count);
-	cudaMalloc((void**)&d_hash_array,sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
-	cudaMalloc((void**)&d_words_per_hash_row,sizeof(int)*HASH_TABLE_SIZE);
+		// loop over documents
+    for(int i=0;i<number_documents; i++)
+    {
+        if( ((float)i/number_documents) == ((float)80/100) )
+            printf("80%% Completed: %d Unique words found: %d\n",i,num_unique_words);
+        else if(((float)i/number_documents) == ((float)60/100))
+            printf("60%% Completed: %d Unique words found: %d\n",i,num_unique_words);
+        else if(((float)i/number_documents) == ((float)40/100))
+            printf("40%% Completed: %d Unique words found: %d\n",i,num_unique_words);
+        else if(((float)i/number_documents) == ((float)20/100))
+            printf("20%% Completed: %d Unique words found: %d\n",i,num_unique_words);
+        else if(((float)i/number_documents) == ((float)10/100))
+            printf("10%% Completed: %d Unique words found: %d\n",i,num_unique_words);
+        else if(i == number_documents - 1)
+            printf("100%% Completed: %d Unique words found: %d\n",i,num_unique_words);
+            
+        // loop over all words in this document
+        for(int j=0;j<documents_size[i];j++)
+        {
+            // calculate the hash index
+            int hashIndex= SuperHash::create_hash(data_list[i][j], (int)data_list[i][j].length(),HASH_TABLE_SIZE);
+            // if the word wasn't already added to the list in the specified index
+            if(!hash_list[hashIndex].Exists(data_list[i][j]))
+            {
+                // append word to the list
+                hash_list[hashIndex].Append((data_list[i][j]),num_unique_words);
 
-	// copy data from device to host
-	cudaMemcpy(d_charDataList,h_charDataList,total_char_count*sizeof(char),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_indexes_string_start_data,indexes_string_start_data,total_word_count*sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_words_per_hash_row,h_words_per_hash_row,HASH_TABLE_SIZE*sizeof(int),cudaMemcpyHostToDevice);
+                num_unique_words++;
+            }
+           
+        }
+    }
+
+    
+    printf("Ended Vocab Extraction\n");
+	}
+	else
+		if(CudaStd::cuda_ver == CODE_CUDA)
+		{
+			// initialize variables
+			int* indexes_string_start_data;
+			char* h_charDataList;
+			string* h_dl;
+			char *d_hash_array, *d_charDataList;
+			int *d_words_per_hash_row, *d_indexes_string_start_data  ;
+
+			//convert 2D array to 1D array of strings
+			 h_dl = CudaStd::convert_2d_to_1d_string(data_list, number_documents,documents_size,total_word_count);
+			// get start index of each word
+			 indexes_string_start_data=(int*)malloc(sizeof(int)*total_word_count);//indexes for the start and length of chars
+			//convert 1D array of strings to 1D array of chars
+			 h_charDataList = CudaStd::convert_string_arr_to_char_arr(h_dl,total_word_count,total_char_count,indexes_string_start_data);
+
+
+			 //Allocate memory to arrays on the host
+			 // size of h_hash_array= (number of rows in hash table)* (each row size)* (size of each word) 
+			h_hash_array=(char*) malloc(sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
+			h_words_per_hash_row= (int*)malloc(sizeof(int)*HASH_TABLE_SIZE);
+
+			// initialize h_words_per_hash_row with zeros
+			for(int i=0;i<HASH_TABLE_SIZE;i++)
+			{
+				h_words_per_hash_row[i]=0;
+			}
+	
+			//allocate memory on the device
+			cudaMalloc((void**)&d_charDataList,sizeof(char)*total_char_count);
+			cudaMalloc((void**)&d_indexes_string_start_data,sizeof(int)*total_word_count);
+			cudaMalloc((void**)&d_hash_array,sizeof(char)*HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE);
+			cudaMalloc((void**)&d_words_per_hash_row,sizeof(int)*HASH_TABLE_SIZE);
+
+			// copy data from device to host
+			cudaMemcpy(d_charDataList,h_charDataList,total_char_count*sizeof(char),cudaMemcpyHostToDevice);
+			cudaMemcpy(d_indexes_string_start_data,indexes_string_start_data,total_word_count*sizeof(int),cudaMemcpyHostToDevice);
+			cudaMemcpy(d_words_per_hash_row,h_words_per_hash_row,HASH_TABLE_SIZE*sizeof(int),cudaMemcpyHostToDevice);
     
 	
-    const int THREADS_X = 512;
-    const int THREADS_Y = 1;
-    const int BLOCKS_X = ceil(total_word_count/(float)THREADS_X);
-    const int BLOCKS_Y = 1;
+			const int THREADS_X = 512;
+			const int THREADS_Y = 1;
+			const int BLOCKS_X = ceil(total_word_count/(float)THREADS_X);
+			const int BLOCKS_Y = 1;
 
-	dim3 blocks(BLOCKS_X,BLOCKS_Y);
-	dim3 threads(THREADS_X,THREADS_Y);
+			dim3 blocks(BLOCKS_X,BLOCKS_Y);
+			dim3 threads(THREADS_X,THREADS_Y);
 
-	// use the dataCollectin struct to pass arguments to the kernel
-	dataCollection d_data;
-	d_data.d_charDataList= d_charDataList;
-	d_data.d_indexes_string_start= d_indexes_string_start_data;
-	d_data.d_HashArray= d_hash_array;
-	d_data.d_words_per_hash_row= d_words_per_hash_row;
-	d_data.total_char_count= total_char_count;
-	d_data.total_word_count= total_word_count;
-	d_data.hash_table_size= HASH_TABLE_SIZE;
-	d_data.hash_row_size= HASH_ROW_SIZE;
-	d_data.hash_word_size= HASH_WORD_SIZE;
+			// use the dataCollectin struct to pass arguments to the kernel
+			dataCollection d_data;
+			d_data.d_charDataList= d_charDataList;
+			d_data.d_indexes_string_start= d_indexes_string_start_data;
+			d_data.d_HashArray= d_hash_array;
+			d_data.d_words_per_hash_row= d_words_per_hash_row;
+			d_data.total_char_count= total_char_count;
+			d_data.total_word_count= total_word_count;
+			d_data.hash_table_size= HASH_TABLE_SIZE;
+			d_data.hash_row_size= HASH_ROW_SIZE;
+			d_data.hash_word_size= HASH_WORD_SIZE;
 
-	// run the kernel 
-	extract_vocab_kernel<<<blocks,threads>>>(d_data);
-	const int numberOfBlocks= ceil(HASH_TABLE_SIZE/(float)THREADS_X);
+			// run the kernel 
+			extract_vocab_kernel<<<blocks,threads>>>(d_data);
+			const int numberOfBlocks= ceil(HASH_TABLE_SIZE/(float)THREADS_X);
 
-	dim3 hash_blocks(numberOfBlocks,1);
-	remove_duplicates_in_hashTable<<<hash_blocks,threads>>>(d_data);
+			dim3 hash_blocks(numberOfBlocks,1);
+			remove_duplicates_in_hashTable<<<hash_blocks,threads>>>(d_data);
 
 
-	// copy the data back from device to host
-	cudaMemcpy(h_hash_array,d_hash_array,HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE*sizeof(char),cudaMemcpyDeviceToHost);
-	cudaMemcpy(h_words_per_hash_row,d_words_per_hash_row,sizeof(int)*HASH_TABLE_SIZE,cudaMemcpyDeviceToHost);
+			// copy the data back from device to host
+			cudaMemcpy(h_hash_array,d_hash_array,HASH_TABLE_SIZE*HASH_ROW_SIZE*HASH_WORD_SIZE*sizeof(char),cudaMemcpyDeviceToHost);
+			cudaMemcpy(h_words_per_hash_row,d_words_per_hash_row,sizeof(int)*HASH_TABLE_SIZE,cudaMemcpyDeviceToHost);
  
-	// calculate numver of unique words 
-	for(int i=0;i<HASH_TABLE_SIZE;i++)
-	{
-		num_unique_words+= h_words_per_hash_row[i];
-	}
-
-	/*for(int i=0;i<HASH_TABLE_SIZE;i++)
-	{
-		for(int j=0;j<h_words_per_hash_row[i];j++)
-		{
-			for(int k=0;k<HASH_WORD_SIZE;k++)
+			// calculate numver of unique words 
+			for(int i=0;i<HASH_TABLE_SIZE;i++)
 			{
-				int index= i*HASH_ROW_SIZE*HASH_WORD_SIZE+ j*HASH_WORD_SIZE;
-				if(h_hash_array[index+k]== '&')
-					break;
-
-				printf("%c",h_hash_array[index+k]);
+				num_unique_words+= h_words_per_hash_row[i];
 			}
-			 printf(" - ");
-		}
 
-		printf("\n End of Row %d ------------------------------------------------------ \n" ,i);
-	}*/
 	
-	//hold index in vocab list
-	// Row size = 10 words
-	// word size = 10 chars
-	//3 words  1st row :(0)messi  ,(10) ronaldo  (20) treka
-	//2 words   2nd row ; (0) emad , (10) shaaban
-	//0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
-	//
- 
-	
-	h_word_index_in_vocab=(int*)malloc(sizeof(int)*HASH_ROW_SIZE*HASH_WORD_SIZE*HASH_TABLE_SIZE);
+			//hold index in vocab list
+			h_word_index_in_vocab=(int*)malloc(sizeof(int)*HASH_ROW_SIZE*HASH_WORD_SIZE*HASH_TABLE_SIZE);
 
-		for(int j=0;j<HASH_ROW_SIZE*HASH_WORD_SIZE*HASH_TABLE_SIZE;j++)
-		{
-			h_word_index_in_vocab[j]=-1;
-		}
-	//calculate index of each vocab word in the vocab list
-	int index_in_h_hash_array=0;
-	for(int i=0;i<HASH_TABLE_SIZE;i++)
-		for(int j=0;j<h_words_per_hash_row[i];j++)
-		{
-			h_word_index_in_vocab[j*HASH_WORD_SIZE+i*HASH_ROW_SIZE*HASH_WORD_SIZE]=index_in_h_hash_array;
-			index_in_h_hash_array++;
-		}
+				for(int j=0;j<HASH_ROW_SIZE*HASH_WORD_SIZE*HASH_TABLE_SIZE;j++)
+				{
+					h_word_index_in_vocab[j]=-1;
+				}
+			//calculate index of each vocab word in the vocab list
+			int index_in_h_hash_array=0;
+			for(int i=0;i<HASH_TABLE_SIZE;i++)
+				for(int j=0;j<h_words_per_hash_row[i];j++)
+				{
+					h_word_index_in_vocab[j*HASH_WORD_SIZE+i*HASH_ROW_SIZE*HASH_WORD_SIZE]=index_in_h_hash_array;
+					index_in_h_hash_array++;
+				}
 		
-	// Free memory on the device
-	cudaFree(d_data.d_charDataList);
-	cudaFree(d_data.d_HashArray);
-	cudaFree(d_data.d_indexes_string_start);
-	cudaFree(d_data.d_words_per_hash_row);
+			// Free memory on the device
+			cudaFree(d_data.d_charDataList);
+			cudaFree(d_data.d_HashArray);
+			cudaFree(d_data.d_indexes_string_start);
+			cudaFree(d_data.d_words_per_hash_row);
 
-	// free memory on the host
-	free(h_charDataList);
-	free(indexes_string_start_data);
-	//delete(h_dl);
+			// free memory on the host
+			free(h_charDataList);
+			free(indexes_string_start_data);
+			//delete(h_dl);
 
-    printf("End of Vocab Extraction\n");
-
+			printf("End of Vocab Extraction\n");
+		}
 }
